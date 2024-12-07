@@ -35,7 +35,7 @@ class Extractor:
                 time.sleep(0.2)
             yield batch_data
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     batch_data_list = Extractor(csv_path='..').fetch_token_in_batches(batch_size=10)
     try:
         for batch_data in batch_data_list:
