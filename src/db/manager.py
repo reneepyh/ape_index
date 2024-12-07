@@ -1,6 +1,6 @@
-from dotenv import load_dotenv
 import os
 import pymysql
+from dotenv import load_dotenv
 
 class DataBaseManager:
     def __init__(self):
