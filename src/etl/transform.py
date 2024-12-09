@@ -61,10 +61,10 @@ class DataTransformer:
         return df
 
 if __name__ == '__main__':
-    from extract import Extractor
+    from extract import DataExtractor
     transformer = DataTransformer()
 
-    df = Extractor(csv_path='../../python/BAYC_trades/all_time.csv').load_csv()
+    df = DataExtractor(csv_path='../../python/BAYC_trades/all_time.csv').load_csv()
     cleaned_data = transformer.clean_csv(df=df)
     market_df = transformer.extract_unique_markets(cleaned_data)
     action_df = transformer.extract_unique_actions(cleaned_data)
