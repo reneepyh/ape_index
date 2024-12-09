@@ -46,21 +46,6 @@ CREATE TABLE `addresses` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `attributes`
---
-
-DROP TABLE IF EXISTS `attributes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `attributes` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `trait_type` varchar(50) NOT NULL,
-  `value` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `markets`
 --
 
@@ -76,45 +61,6 @@ CREATE TABLE `markets` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `token_attributes`
---
-
-DROP TABLE IF EXISTS `token_attributes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `token_attributes` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `token_id` int NOT NULL,
-  `attribute_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `token_id` (`token_id`),
-  KEY `attribute_id` (`attribute_id`),
-  CONSTRAINT `token_attributes_ibfk_1` FOREIGN KEY (`token_id`) REFERENCES `tokens` (`id`),
-  CONSTRAINT `token_attributes_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tokens`
---
-
-DROP TABLE IF EXISTS `tokens`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tokens` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `token_id` int NOT NULL,
-  `image_url` text,
-  `rarity_rank` int DEFAULT NULL,
-  `owner_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `token_id` (`token_id`),
-  KEY `owner_id` (`owner_id`),
-  CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `addresses` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `transactions`
 --
 
@@ -126,18 +72,15 @@ CREATE TABLE `transactions` (
   `time` datetime NOT NULL,
   `action_id` int NOT NULL,
   `buyer_id` int NOT NULL,
-  `token_id` int NOT NULL,
   `price` decimal(20,2) NOT NULL,
   `market_id` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `action_id` (`action_id`),
   KEY `buyer_id` (`buyer_id`),
-  KEY `token_id` (`token_id`),
   KEY `market_id` (`market_id`),
   CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`action_id`) REFERENCES `actions` (`id`),
   CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`buyer_id`) REFERENCES `addresses` (`id`),
-  CONSTRAINT `transactions_ibfk_3` FOREIGN KEY (`token_id`) REFERENCES `tokens` (`id`),
-  CONSTRAINT `transactions_ibfk_4` FOREIGN KEY (`market_id`) REFERENCES `markets` (`id`)
+  CONSTRAINT `transactions_ibfk_3` FOREIGN KEY (`market_id`) REFERENCES `markets` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -150,4 +93,4 @@ CREATE TABLE `transactions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-05 22:35:00
+-- Dump completed on 2024-12-09 21:36:27
