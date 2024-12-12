@@ -9,7 +9,7 @@ class Crawler:
         self.base_url = base_url
         self.data = []
 
-    def crawl_pages(self):
+    def crawl_all_pages(self):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
             page = browser.new_page()
@@ -17,19 +17,19 @@ class Crawler:
 
             while True:
                 page.wait_for_selector("#datatable", state="visible")
-
                 self.__extract_data(page)
 
                 # 按下一頁
                 try:
-                    next_button = page.locator("li.paginate_button.page-item.next")
-        
-                    if next_button.is_visible() and not next_button.get_attribute("class").contains("disabled"):
-                        next_button.click()
-                        page.wait_for_timeout(2000)
-                    else:
-                        print("Reached the last page or no more pages to crawl.")
+                    next_button = page.locator("#datatable_next")
+                    next_button_class = next_button.get_attribute("class")
+
+                    if "disabled" in next_button_class:
+                        print("Reached the last page.")
                         break
+
+                    next_button.click()
+                    page.wait_for_timeout(2000)
                 except Exception as e:
                     print("Error occurred during pagination:", e)
                     break
@@ -47,9 +47,14 @@ class Crawler:
             action = row.locator("td:nth-child(5) .text-success").text_content()
             price = row.locator("td:nth-child(6)").text_content()
             market = row.locator("td:nth-child(7) span").text_content()
-            buyer = row.locator("td:nth-child(8) .js-clipboard").get_attribute("data-clipboard-text")
+            
+            buyer_cell = row.locator("td:nth-child(8)")
+            buyer_text = buyer_cell.text_content().strip()
+            if buyer_text == "-":
+                continue  #跳過沒有買家的資料
+            buyer = buyer_cell.locator(".js-clipboard").get_attribute("data-clipboard-text")
 
-            nft_full_id = row.locator("td:nth-child(10) a .hash-tag.text-truncate span")
+            nft_full_id = row.locator("td:nth-child(10) a .hash-tag.text-truncate span", has_text="#").text_content()
             nft_id = str(nft_full_id).split("#")[1]
 
             self.data.append({
@@ -79,24 +84,37 @@ class Crawler:
         except Exception as e:
             print(f"Error occurred while saving to CSV: {e}")
 
-    def __crawl_pages(self, page, page_limit=1):
+    def crawl_pages_with_limit(self, page_limit=2):
         current_page = 0
 
-        while current_page < page_limit:
-            self.__extract_data(page)
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=False)
+            page = browser.new_page()
+            page.goto(self.base_url)
 
-            next_button = page.locator("li.paginate_button.page-item.next")
-            if next_button.is_visible() and not next_button.get_attribute("class").contains("disabled"):
-                next_button.click()
-                page.wait_for_timeout(2000)
-                current_page += 1
-            else:
-                print("No more pages to crawl.")
-                break
+            while current_page < page_limit:
+                page.wait_for_selector("#datatable", state="visible")
+                self.__extract_data(page)
+
+                try:
+                    next_button = page.locator("#datatable_next")
+                    next_button_class = next_button.get_attribute("class")
+                    
+                    if "disabled" in next_button_class:
+                        print("Reached the last page.")
+                        break
+
+                    next_button.click()
+                    page.wait_for_timeout(2000)
+                except Exception as e:
+                    print("Error occurred during pagination:", e)
+                    break
+               
+            browser.close()
 
 
 if __name__ == "__main__":
     crawler = Crawler(base_url=os.getenv('CRAW_PAGE'))
-    crawler.crawl_pages()
-    crawler.save_to_csv('test.csv')
+    crawler.crawl_all_pages()
+    crawler.save_to_csv('transactions.csv')
 
