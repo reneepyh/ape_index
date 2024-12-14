@@ -11,7 +11,7 @@
 Icon
 
 #rawdata
-db/raw/
+src/db/raw
 
 # Thumbnails
 ._*
