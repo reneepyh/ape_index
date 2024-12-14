@@ -72,11 +72,13 @@ CREATE TABLE `transactions` (
   `time` datetime NOT NULL,
   `action_id` int NOT NULL,
   `buyer_id` int NOT NULL,
+  `token_id` int NOT NULL,
   `price` decimal(20,2) NOT NULL,
   `market_id` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `action_id` (`action_id`),
   KEY `buyer_id` (`buyer_id`),
+  KEY `token_id` (`token_id`),
   KEY `market_id` (`market_id`),
   CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`action_id`) REFERENCES `actions` (`id`),
   CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`buyer_id`) REFERENCES `addresses` (`id`),
@@ -93,4 +95,4 @@ CREATE TABLE `transactions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-09 21:36:27
+-- Dump completed on 2024-12-13 22:18:46
