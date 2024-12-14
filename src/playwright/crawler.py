@@ -1,5 +1,7 @@
 import os
 import csv
+import pandas as pd
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 
@@ -8,8 +10,9 @@ class Crawler:
         load_dotenv()
         self.base_url = base_url
         self.data = []
+        self.stop_crawling = False
 
-    def crawl_all_pages(self):
+    def crawl_all_pages(self, last_known_time=None):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
             page = browser.new_page()
@@ -17,7 +20,11 @@ class Crawler:
 
             while True:
                 page.wait_for_selector("#datatable", state="visible")
-                self.__extract_data(page)
+                self.__extract_data(page, last_known_time=last_known_time)
+
+                if self.stop_crawling:
+                    print("Reached the previously transaction.")
+                    break
 
                 # 按下一頁
                 try:
@@ -36,7 +43,7 @@ class Crawler:
 
             browser.close()
 
-    def __extract_data(self, page):
+    def __extract_data(self, page, last_known_time=None):
         rows = page.locator("table#datatable tbody tr")
 
         for i in range(rows.count()):
@@ -57,6 +64,12 @@ class Crawler:
             nft_full_id = row.locator("td:nth-child(10) a .hash-tag.text-truncate span", has_text="#").text_content()
             nft_id = str(nft_full_id).split("#")[1]
 
+            transaction_datetime = pd.to_datetime(timestamp)
+            # 檢查是否為新資料
+            if last_known_time and transaction_datetime <= last_known_time:
+                self.stop_crawling = True
+                return
+
             self.data.append({
                 "Transaction Hash": transaction_hash,
                 "DateTime (UTC)": timestamp,
@@ -67,7 +80,7 @@ class Crawler:
                 "Token ID": nft_id
             })
 
-    def save_to_csv(self, filename):
+    def save_to_csv(self, folder="src/db/raw"):
         if not self.data:
             print("No data to save.")
             return
@@ -75,12 +88,12 @@ class Crawler:
         fieldnames = self.data[0].keys()
 
         try:
-            with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            with open(folder, mode='w', newline='', encoding='utf-8') as file:
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
                 writer.writeheader()
                 writer.writerows(self.data)
 
-            print(f"Data successfully saved to {filename}")
+            print(f"Data successfully saved to {folder}")
         except Exception as e:
             print(f"Error occurred while saving to CSV: {e}")
 

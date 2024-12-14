@@ -31,6 +31,14 @@ class DataBaseManager:
         except pymysql.Error as e:
             print(f'Error executemany: {e}')
 
+    def fetch_one(self, sql, params=None):
+        try:
+            self.cursor.execute(sql, params)
+            return self.cursor.fetchone()
+        except pymysql.Error as e:
+            print(f'Error fetching data: {e}')
+            return []
+    
     def fetch_all(self, sql, params=None):
         try:
             self.cursor.execute(sql, params)

@@ -5,7 +5,7 @@ class DataLoader:
     def insert_markets(self, markets_df):
         try:
             sql = """
-            INSERT INTO markets (name)
+            INSERT IGNORE INTO markets (name)
             VALUES (%s)
             """
             
@@ -19,7 +19,7 @@ class DataLoader:
     def insert_addresses(self, addresses_df):
         try:
             sql = """
-            INSERT INTO addresses (address)
+            INSERT IGNORE INTO addresses (address)
             VALUES (%s)
             """
   
@@ -33,7 +33,7 @@ class DataLoader:
     def insert_actions(self, actions_df):
         try:
             sql = """
-            INSERT INTO actions (name)
+            INSERT IGNORE INTO actions (name)
             VALUES (%s)
             """
 
