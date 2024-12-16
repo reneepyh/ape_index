@@ -83,7 +83,7 @@ class Crawler:
     def save_to_csv(self, folder="src/db/raw"):
         if not self.data:
             print("No data to save.")
-            return
+            return None
 
         fieldnames = self.data[0].keys()
 
@@ -94,8 +94,10 @@ class Crawler:
                 writer.writerows(self.data)
 
             print(f"Data successfully saved to {folder}")
+            return folder
         except Exception as e:
             print(f"Error occurred while saving to CSV: {e}")
+            return None
 
     def crawl_pages_with_limit(self, page_limit=2):
         current_page = 0

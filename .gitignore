@@ -10,8 +10,12 @@
 # Icon must end with two \r
 Icon
 
-#rawdata
+# rawdata
 src/db/raw
+
+# pipeline log
+*.sh
+log/
 
 # Thumbnails
 ._*

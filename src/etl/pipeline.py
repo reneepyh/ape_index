@@ -28,25 +28,29 @@ class Pipeline:
         folder_path = Path("src/db/raw")
         folder_path.mkdir(parents=True, exist_ok=True)
         file_path = folder_path / f'transactions_{current_time}.csv'
-        self.crawler.save_to_csv(file_path)
+        saved_file = self.crawler.save_to_csv(file_path)
 
-        if file_path:
-            raw_data = self.extractor.load_csv(csv_path=file_path)
-            cleaned_data = self.transformer.clean_csv(df=raw_data)
+        if not saved_file:
+            print("No new data crawled. Exit pipeline.")
+            self.loader.close_connection()
+            return
+        
+        raw_data = self.extractor.load_csv(csv_path=file_path)
+        cleaned_data = self.transformer.clean_csv(df=raw_data)
 
-            markets_df = self.transformer.extract_unique_markets(cleaned_data)
-            self.loader.insert_markets(markets_df=markets_df)
-            self.transformer.create_markets_mapping()
+        markets_df = self.transformer.extract_unique_markets(cleaned_data)
+        self.loader.insert_markets(markets_df=markets_df)
+        self.transformer.create_markets_mapping()
 
-            actions_df = self.transformer.extract_unique_actions(cleaned_data)
-            self.loader.insert_actions(actions_df=actions_df)
-            self.transformer.create_action_mapping()
+        actions_df = self.transformer.extract_unique_actions(cleaned_data)
+        self.loader.insert_actions(actions_df=actions_df)
+        self.transformer.create_action_mapping()
 
-            addresses_df = self.transformer.extract_unique_buyers(cleaned_data)
-            self.loader.insert_addresses(addresses_df=addresses_df)
-            self.transformer.create_buyers_mapping()
+        addresses_df = self.transformer.extract_unique_buyers(cleaned_data)
+        self.loader.insert_addresses(addresses_df=addresses_df)
+        self.transformer.create_buyers_mapping()
 
-            normalize_transactions = self.transformer.normalize_transactions(df=cleaned_data)
-            self.loader.insert_transactions(transactions_df=normalize_transactions)
+        normalize_transactions = self.transformer.normalize_transactions(df=cleaned_data)
+        self.loader.insert_transactions(transactions_df=normalize_transactions)
 
         self.loader.close_connection()
