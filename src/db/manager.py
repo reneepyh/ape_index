@@ -1,6 +1,6 @@
-from dotenv import load_dotenv
 import os
 import pymysql
+from dotenv import load_dotenv
 
 class DataBaseManager:
     def __init__(self):
@@ -30,6 +30,22 @@ class DataBaseManager:
             return self.cursor
         except pymysql.Error as e:
             print(f'Error executemany: {e}')
+
+    def fetch_one(self, sql, params=None):
+        try:
+            self.cursor.execute(sql, params)
+            return self.cursor.fetchone()
+        except pymysql.Error as e:
+            print(f'Error fetching data: {e}')
+            return []
+    
+    def fetch_all(self, sql, params=None):
+        try:
+            self.cursor.execute(sql, params)
+            return self.cursor.fetchall()
+        except pymysql.Error as e:
+            print(f'Error fetching data: {e}')
+            return []     
 
     def commit(self):
         try:
