@@ -47,7 +47,7 @@ class DataLoader:
     def insert_transactions(self, transactions_df):
         try:
             sql = """
-            INSERT INTO transactions (transaction_hash, time, price, buyer_id, market_id, action_id, token_id)
+            INSERT INTO transactions (transaction_hash, time, price, token_id, market_id, action_id, buyer_id)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             params = list(transactions_df.itertuples(index=False, name=None))
