@@ -11,7 +11,7 @@
 Icon
 
 # rawdata
-src/db/raw
+src/etl/db/raw
 
 # pipeline log
 *.sh

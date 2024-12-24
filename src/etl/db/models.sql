@@ -27,7 +27,7 @@ CREATE TABLE `actions` (
   `name` varchar(25) NOT NULL COMMENT 'Action name, e.g., Bought or Bid Won',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `addresses` (
   `address` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `address` (`address`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=148804 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +57,7 @@ CREATE TABLE `markets` (
   `name` varchar(25) NOT NULL COMMENT 'Market name, e.g., OpenSea, Rarible',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,22 +68,24 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `transactions` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `transaction_id` int NOT NULL AUTO_INCREMENT,
+  `transaction_hash` varchar(255) NOT NULL,
   `time` datetime NOT NULL,
   `action_id` int NOT NULL,
   `buyer_id` int NOT NULL,
   `token_id` int NOT NULL,
   `price` decimal(20,2) NOT NULL,
   `market_id` int NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`transaction_id`),
   KEY `action_id` (`action_id`),
   KEY `buyer_id` (`buyer_id`),
   KEY `token_id` (`token_id`),
   KEY `market_id` (`market_id`),
+  KEY `time_idx` (`time`),
   CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`action_id`) REFERENCES `actions` (`id`),
   CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`buyer_id`) REFERENCES `addresses` (`id`),
   CONSTRAINT `transactions_ibfk_3` FOREIGN KEY (`market_id`) REFERENCES `markets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=175203 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -95,4 +97,4 @@ CREATE TABLE `transactions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-13 22:18:46
+-- Dump completed on 2024-12-22 23:52:20
