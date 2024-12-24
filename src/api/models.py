@@ -8,29 +8,7 @@ class Interval(int, Enum):
     LAST_YEAR = 2
     ALL_TIME = 3
 
-class GeneralRequest(BaseModel):
-    interval: Interval = Field(
-        ..., 
-        description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time."
-    )
-
-class TokenRequest(BaseModel):
-    interval: Interval = Field(
-        ..., 
-        description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time."
-    )
-    token_id: str = Field(
-        ..., 
-        description="Token ID for token-specific analysis."
-    )
-
-class AddressRequest(BaseModel):
-    address: str = Field(
-        ..., 
-        description="Wallet address for which to retrieve all held token IDs."
-    )
-
-# TimeBased
+# Time Based
 class TimeBasedData(BaseModel):
     total_volume: float = Field(None, description="Total sales volume.")
     average_price: float = Field(None, description="Average sale price.")
@@ -43,7 +21,7 @@ class TimeBasedResponse(BaseModel):
     )
     data: list[TimeBasedData] = Field(..., description="List of time-based aggregated data.")
 
-# BuyerSeller
+# Buyer Seller
 class BuyerSellerData(BaseModel):
     address: str = Field(..., description="Wallet address of the buyer or seller.")
     total_volume: float = Field(..., description="Total transaction volume.")
@@ -57,7 +35,7 @@ class BuyerSellerResponse(BaseModel):
     top_buyers: list[BuyerSellerData] = Field(..., description="List of top buyers.")
     top_sellers: list[BuyerSellerData] = Field(..., description="List of top sellers.")
 
-# MarketplaceComparison
+# Marketplace Comparison
 class MarketplaceData(BaseModel):
     marketplace: str = Field(..., description="Name of the marketplace.")
     total_volume: float = Field(..., description="Total transaction volume on the marketplace.")
@@ -71,7 +49,17 @@ class MarketplaceComparisonResponse(BaseModel):
     )
     data: list[MarketplaceData] = Field(..., description="List of marketplace comparison data.")
 
-# TokenTransaction
+# Top Flip Token
+class TopFlipTokenData(BaseModel):
+    token_id: str = Field(..., description="Unique ID of the token.")
+    total_profit: float = Field(..., description="Profit from the largest single flip transaction.")
+    seller: str = Field(..., description="Wallet address of the seller.")
+
+class TopFlipTokenResponse(BaseModel):
+    interval: int = Field(..., description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time.")
+    data: list[TopFlipTokenData] = Field(..., description="List of top 5 flip transactions with seller details.")
+
+# Token Transaction
 class TokenTransactionData(BaseModel):
     sold_date: datetime = Field(..., description="Date and time of the transaction.")
     price: float = Field(..., description="Sale price of the token.")
@@ -85,28 +73,3 @@ class TokenTransactionResponse(BaseModel):
         description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time."
     )
     data: list[TokenTransactionData] = Field(..., description="List of transaction data for the token.")
-
-# ResaleAnalysis
-class ResaleData(BaseModel):
-    token_id: str = Field(..., description="Unique ID of the token.")
-    resale_count: int = Field(..., description="Number of resales.")
-    total_profit: float = Field(..., description="Total profit from resales.")
-    average_profit: float = Field(..., description="Average profit per resale.")
-
-class ResaleAnalysisResponse(BaseModel):
-    interval: Interval = Field(
-        ..., 
-        description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time."
-    )
-    data: list[ResaleData] = Field(..., description="List of resale and flipping behavior data.")
-
-# TokenOwned
-class TokenOwnedResponse(BaseModel):
-    address: str = Field(
-        ..., 
-        description="Wallet address for which the token IDs are retrieved."
-    )
-    token_ids: list[str] = Field(
-        ..., 
-        description="List of token IDs held by the given address."
-    )
