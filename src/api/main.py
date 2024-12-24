@@ -6,7 +6,9 @@ from src.api.db.database import SessionLocal
 import src.api.db.models as db_models
 import src.api.models as api_models
 
-app = FastAPI()
+app = FastAPI(
+    title="Bored Ape Yacht Club NFT Analytics API"
+)
 
 def get_db():
     db = SessionLocal()
