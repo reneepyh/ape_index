@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ape Index - BAYC NFT 分析儀表板</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Ape Index</h1>
+      <h2>Bored Ape Yacht Club (BAYC) NFT 分析儀表板</h2>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav>
+      <button onclick="showSection('time-based')">📊 時間維度分析</button>
+      <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
+      <button onclick="showSection('marketplace')">🏢 市場比較</button>
+      <button onclick="showSection('flip-tokens')">🔄 高利潤翻轉代幣</button>
+      <button onclick="showSection('token-transaction')">
+        🔗 代幣交易記錄
+      </button>
+    </nav>
+
+    <!-- Analysis Sections -->
+    <section id="time-based" class="analysis-section">
+      <h2>📊 時間維度分析</h2>
+      <p>
+        這個分析提供不同時間區間（7天、30天、1年或所有時間）內 BAYC NFT
+        的總銷售量、平均價格及交易次數。
+      </p>
+      <select
+        id="time-based-interval"
+        onchange="fetchTimeBasedData(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="time-based-chart"></div>
+    </section>
+
+    <section id="buyers-sellers" class="analysis-section hidden">
+      <h2>🛍️ 主要買家與賣家</h2>
+      <p>這個分析顯示在特定時間範圍內，交易量最高的五位買家與賣家。</p>
+      <select
+        id="buyers-sellers-interval"
+        onchange="fetchTopBuyersSellers(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="top-buyers-chart"></div>
+      <div id="top-sellers-chart"></div>
+    </section>
+
+    <section id="marketplace" class="analysis-section hidden">
+      <h2>🏢 市場比較</h2>
+      <p>
+        這個分析比較不同 NFT
+        市場上的交易總量、平均價格及交易次數，幫助您了解各市場的活躍度。
+      </p>
+      <select
+        id="marketplace-interval"
+        onchange="fetchMarketplaceComparison(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="marketplace-chart"></div>
+    </section>
+
+    <section id="flip-tokens" class="analysis-section hidden">
+      <h2>🔄 高利潤翻轉代幣</h2>
+      <p>
+        這個分析顯示五個最高利潤的代幣交易，揭示哪個代幣在單次交易中獲得最多利潤。
+      </p>
+      <select
+        id="flip-tokens-interval"
+        onchange="fetchTopFlipTokens(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="top-flip-tokens-chart"></div>
+    </section>
+
+    <section id="token-transaction" class="analysis-section hidden">
+      <h2>🔗 代幣交易記錄</h2>
+      <p>您可以輸入特定代幣 ID，並選擇時間區間，查看該代幣的交易歷史記錄。</p>
+      <div>
+        <input type="text" id="token-id" placeholder="輸入代幣 ID" />
+        <select id="token-transaction-interval">
+          <option value="0">最近7天</option>
+          <option value="1">最近30天</option>
+          <option value="2">去年</option>
+          <option value="3" selected>所有時間</option>
+        </select>
+        <button onclick="fetchTokenTransactions()">查詢代幣資料</button>
+      </div>
+      <p id="token-transaction-error" class="error-text"></p>
+      <p id="token-transaction-empty" class="empty-text hidden">沒有交易資料</p>
+      <div id="token-transaction-chart"></div>
+    </section>
+
+    <script src="main.js"></script>
+  </body>
+</html>

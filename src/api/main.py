@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
@@ -8,6 +9,14 @@ import src.api.models as api_models
 
 app = FastAPI(
     title="Bored Ape Yacht Club NFT Analytics API"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def get_db():
@@ -298,12 +307,22 @@ async def top_flip_token(
     description="Retrieve transaction history for a specific token within the requested interval"
 )
 async def token_transaction(
-    token_id: str = Query(..., description="Token ID for transaction history"),
+    token_id: str = Query(..., description="Token ID (0-9999) for transaction history"),
     interval: int = Query(..., description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time"),
     db: Session = Depends(get_db)
 ):
     if interval not in VALID_INTERVALS:
         raise HTTPException(status_code=400, detail=f"Invalid interval '{interval}'.")
+
+    try:
+        token_id_int = int(token_id)
+        if token_id_int < 0 or token_id_int > 9999:
+            raise ValueError("Token ID must be between 0 and 9999.")
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="Token ID must be an integer between 0 and 9999."
+        )
 
     start_time = get_interval_date_range(interval)
 
