@@ -27,10 +27,7 @@
     <!-- Analysis Sections -->
     <section id="time-based" class="analysis-section">
       <h2>📊 時間維度分析</h2>
-      <p>
-        這個分析提供不同時間區間（7天、30天、1年或所有時間）內 BAYC NFT
-        的總銷售量、平均價格及交易次數。
-      </p>
+      <p>此分析展示指定時間範圍內的 BAYC NFT 總銷售量、平均價格和交易次數。</p>
       <select
         id="time-based-interval"
         onchange="fetchTimeBasedData(this.value)"
@@ -40,7 +37,21 @@
         <option value="2">去年</option>
         <option value="3" selected>所有時間</option>
       </select>
-      <div id="time-based-chart"></div>
+      <div id="time-based-summary">
+        <div class="summary-card">
+          <h3>📊 總銷售量</h3>
+          <p id="total-volume">-</p>
+        </div>
+        <div class="summary-card">
+          <h3>💲 平均價格</h3>
+          <p id="average-price">-</p>
+        </div>
+        <div class="summary-card">
+          <h3>🔄 交易次數</h3>
+          <p id="transaction-count">-</p>
+        </div>
+      </div>
+      <p id="time-based-error" class="error-text hidden"></p>
     </section>
 
     <section id="buyers-sellers" class="analysis-section hidden">

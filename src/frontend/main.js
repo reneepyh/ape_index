@@ -28,31 +28,44 @@ function showSection(sectionId) {
   }
 }
 
-// Time-Based Analytics
+// Time-Based
 async function fetchTimeBasedData(interval) {
+  const totalVolumeEl = document.getElementById("total-volume");
+  const averagePriceEl = document.getElementById("average-price");
+  const transactionCountEl = document.getElementById("transaction-count");
+  const errorTextEl = document.getElementById("time-based-error");
+
+  totalVolumeEl.textContent = "-";
+  averagePriceEl.textContent = "-";
+  transactionCountEl.textContent = "-";
+  errorTextEl.classList.add("hidden");
+  errorTextEl.textContent = "";
+
   try {
     const response = await fetch(
       `${BASE_URL}/time-based-data?interval=${interval}`
     );
     const data = await response.json();
 
-    Plotly.newPlot(
-      "time-based-chart",
-      [
-        {
-          x: ["總銷售量", "平均價格", "交易次數"],
-          y: [
-            data.data[0].total_volume,
-            data.data[0].average_price,
-            data.data[0].transaction_count,
-          ],
-          type: "bar",
-        },
-      ],
-      { title: "時間維度分析" }
-    );
+    if (!data.data || data.data.length === 0) {
+      errorTextEl.textContent = "沒有資料";
+      errorTextEl.classList.remove("hidden");
+      return;
+    }
+
+    totalVolumeEl.textContent = `${Math.floor(
+      data.data[0].total_volume
+    ).toLocaleString()} USD`;
+    averagePriceEl.textContent = `${Math.floor(
+      data.data[0].average_price
+    ).toLocaleString()} USD`;
+    transactionCountEl.textContent = `${Math.floor(
+      data.data[0].transaction_count
+    ).toLocaleString()} 次`;
   } catch (error) {
     console.error("Error fetching time-based data:", error);
+    errorTextEl.textContent = "無法讀取時間維度資料，請稍後再試。";
+    errorTextEl.classList.remove("hidden");
   }
 }
 
@@ -64,7 +77,7 @@ async function fetchTopBuyersSellers(interval) {
     );
     const data = await response.json();
 
-    // Top Buyers Chart
+    // Top Buyers
     Plotly.newPlot(
       "top-buyers-chart",
       [
@@ -78,7 +91,7 @@ async function fetchTopBuyersSellers(interval) {
       { title: "主要買家" }
     );
 
-    // Top Sellers Chart
+    // Top Sellers
     Plotly.newPlot(
       "top-sellers-chart",
       [

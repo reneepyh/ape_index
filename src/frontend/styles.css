@@ -65,10 +65,45 @@ div[id$="-chart"] {
   margin-top: 1rem;
 }
 
+#time-based-summary {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+.summary-card {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  flex: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.summary-card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0078d7;
+  margin: 0;
+}
+
 .error-text {
   color: red;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
 }
 
 .empty-text {
