@@ -10,22 +10,26 @@ class DataTransformer:
     def clean_csv(self, df: pd.DataFrame) -> pd.DataFrame:
         df['DateTime (UTC)'] = pd.to_datetime(df['DateTime (UTC)'])
         
-        # 移除交易價格為0和沒有買家s的資料
+        # 移除交易價格為0, EDC幣別,和沒有買家的資料
         df.dropna(subset=['Price', 'Buyer'], inplace=True)
-        df = df[~df['Price'].str.contains('0 ETH|0 WETH')]
+        df = df[~df['Price'].str.contains('0 ETH|0 WETH|EDC')]
         # clean price for USD only
-        df.loc[:, 'Price'] = df['Price'].apply(self.__extract_usd).astype(float)
+        df.loc[:, 'Price'] = df['Price'].apply(self.__extract_usd).astype(float, errors='ignore')
+        df = df.dropna(subset=['Price'])
         # 依時間排序
         df = df.sort_values(by='DateTime (UTC)')
         return df
 
     def __extract_usd(self, value):
-        if "(" in value:
-            start = value.find('($') + 2 #start after ($
+        if "(" in value and "$" in value:
+            start = value.find('($') + 2  # Start after ($
             end = value.find(')')
             return value[start:end].replace(',', '')
+        elif "USDC" in value or "USD" in value:
+            return ''.join(c for c in value if c.isdigit() or c == '.').strip()
         else:
-            return ''.join(c for c in value if c.isdigit()).strip()
+            return None
+
         
     def extract_unique_markets(self, df):
         unique_markets = df['Market'].drop_duplicates().reset_index(drop=True)
