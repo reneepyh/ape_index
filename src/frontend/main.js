@@ -95,18 +95,51 @@ async function fetchTopBuyersSellers(interval) {
     );
     const data = await response.json();
 
+    const formatAddress = (address) =>
+      `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+
     // Top Buyers
     Plotly.newPlot(
       "top-buyers-chart",
       [
         {
-          x: data.top_buyers.map((buyer) => buyer.address),
+          x: data.top_buyers.map((buyer) => formatAddress(buyer.address)),
           y: data.top_buyers.map((buyer) => buyer.total_volume),
+          text: data.top_buyers.map((buyer) => buyer.address),
           type: "bar",
+          marker: {
+            color: "#4CAF50", // Bar color
+          },
           name: "主要買家",
+          hoverlabel: {
+            bgcolor: "#FFC107", // Background color for hover tooltips (e.g., yellow)
+            font: { color: "#000000" }, // Text color for hover tooltips (e.g., black)
+          },
+          hovertemplate:
+            "<b>地址:</b> %{text}<br>" +
+            "<b>總銷售量:</b> %{y}<br>" +
+            "<extra></extra>",
+          textposition: "none",
         },
       ],
-      { title: "主要買家" }
+      {
+        title: "主要買家",
+        xaxis: {
+          title: {
+            text: "買家地址",
+            standoff: 20,
+          },
+          automargin: true,
+          showticklabels: true,
+        },
+        yaxis: {
+          title: {
+            text: "總銷售量",
+            standoff: 20,
+          },
+          automargin: true,
+        },
+      }
     );
 
     // Top Sellers
@@ -114,13 +147,43 @@ async function fetchTopBuyersSellers(interval) {
       "top-sellers-chart",
       [
         {
-          x: data.top_sellers.map((seller) => seller.address),
+          x: data.top_sellers.map((seller) => formatAddress(seller.address)),
           y: data.top_sellers.map((seller) => seller.total_volume),
+          text: data.top_sellers.map((seller) => seller.address),
           type: "bar",
+          marker: {
+            color: "#4CAF50", // Bar color
+          },
           name: "主要賣家",
+          hoverlabel: {
+            bgcolor: "#FFC107", // Background color for hover tooltips (e.g., yellow)
+            font: { color: "#000000" }, // Text color for hover tooltips (e.g., black)
+          },
+          hovertemplate:
+            "<b>地址:</b> %{text}<br>" +
+            "<b>總銷售量:</b> %{y}<br>" +
+            "<extra></extra>",
+          textposition: "none",
         },
       ],
-      { title: "主要賣家" }
+      {
+        title: "主要賣家",
+        xaxis: {
+          title: {
+            text: "賣家地址",
+            standoff: 20,
+          },
+          automargin: true,
+          showticklabels: true,
+        },
+        yaxis: {
+          title: {
+            text: "總銷售量",
+            standoff: 20,
+          },
+          automargin: true,
+        },
+      }
     );
   } catch (error) {
     console.error("Error fetching top buyers/sellers:", error);
