@@ -19,23 +19,23 @@ class Pipeline:
         self.loader = DataLoader(db=self.db)
     
     def run(self):
-        # # 取得最後一筆資料的時間
-        # latest = self.db.fetch_one("SELECT time FROM transactions ORDER BY time DESC LIMIT 1")
-        # last_known_time = latest[0] if latest else None
-        # self.crawler.crawl_all_pages(last_known_time=last_known_time)
-        # current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # 取得最後一筆資料的時間
+        latest = self.db.fetch_one("SELECT time FROM transactions ORDER BY time DESC LIMIT 1")
+        last_known_time = latest[0] if latest else None
+        self.crawler.crawl_all_pages(last_known_time=last_known_time)
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        # folder_path = Path("src/etl/db/raw")
-        # folder_path.mkdir(parents=True, exist_ok=True)
-        # file_path = folder_path / f'transactions_{current_time}.csv'
-        # saved_file = self.crawler.save_to_csv(file_path)
+        folder_path = Path("src/etl/db/raw")
+        folder_path.mkdir(parents=True, exist_ok=True)
+        file_path = folder_path / f'transactions_{current_time}.csv'
+        saved_file = self.crawler.save_to_csv(file_path)
 
-        # if not saved_file:
-        #     print("No new data crawled. Exit pipeline.")
-        #     self.loader.close_connection()
-        #     return
+        if not saved_file:
+            print("No new data crawled. Exit pipeline.")
+            self.loader.close_connection()
+            return
         
-        raw_data = self.extractor.load_csv(csv_path="src/etl/db/raw/transactions_20241225_230007.csv")
+        raw_data = self.extractor.load_csv(csv_path=file_path)
         cleaned_data = self.transformer.clean_csv(df=raw_data)
 
         markets_df = self.transformer.extract_unique_markets(cleaned_data)

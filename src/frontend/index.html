@@ -8,9 +8,12 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <h1>Ape Index</h1>
-      <h2>Bored Ape Yacht Club (BAYC) NFT 分析儀表板</h2>
+    <header class="header-with-bg">
+      <div class="header-overlay"></div>
+      <div class="header-content">
+        <h1>Ape Index</h1>
+        <h2>無聊猿 Bored Ape Yacht Club (BAYC) NFT 分析儀表板</h2>
+      </div>
     </header>
 
     <!-- Navigation Bar -->
@@ -19,15 +22,16 @@
       <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
       <button onclick="showSection('marketplace')">🏢 市場比較</button>
       <button onclick="showSection('flip-tokens')">🔄 高利潤翻轉代幣</button>
-      <button onclick="showSection('token-transaction')">
-        🔗 代幣交易記錄
-      </button>
+      <button onclick="showSection('token-transaction')">🔗 NFT交易記錄</button>
     </nav>
 
     <!-- Analysis Sections -->
     <section id="time-based" class="analysis-section">
       <h2>📊 時間維度分析</h2>
-      <p>此分析展示指定時間範圍內的 BAYC NFT 總銷售量、平均價格和交易次數。</p>
+      <p>
+        此分析展示指定時間範圍內最高價售出的BAYC NFT、BAYC NFT
+        總銷售量、平均價格和交易次數。
+      </p>
       <select
         id="time-based-interval"
         onchange="fetchTimeBasedData(this.value)"
@@ -38,17 +42,26 @@
         <option value="3" selected>所有時間</option>
       </select>
       <div id="time-based-summary">
-        <div class="summary-card">
-          <h3>📊 總銷售量</h3>
-          <p id="total-volume">-</p>
+        <div class="summary-card nft-card">
+          <h3>🏆 最高售價 NFT</h3>
+          <img id="nft-image" src="" alt="NFT Image" />
+          <p>
+            <strong>Token ID:</strong>
+            <span id="highest-price-token-id">-</span>
+          </p>
+          <p><strong>售價:</strong> <span id="highest-price">-</span></p>
+          <p>
+            <strong>稀有度排名:</strong> <span id="nft-rarity">-</span> / 10000
+          </p>
         </div>
-        <div class="summary-card">
-          <h3>💲 平均價格</h3>
-          <p id="average-price">-</p>
-        </div>
-        <div class="summary-card">
-          <h3>🔄 交易次數</h3>
-          <p id="transaction-count">-</p>
+
+        <div class="summary-card combined-metrics-card">
+          <h3>📊 銷售數據概覽</h3>
+          <p><strong>總銷售量:</strong> <span id="total-volume">-</span></p>
+          <p><strong>平均價格:</strong> <span id="average-price">-</span></p>
+          <p>
+            <strong>交易次數:</strong> <span id="transaction-count">-</span>
+          </p>
         </div>
       </div>
       <p id="time-based-error" class="error-text hidden"></p>

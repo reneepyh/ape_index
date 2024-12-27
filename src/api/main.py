@@ -1,3 +1,5 @@
+import os, requests, json
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
@@ -7,6 +9,7 @@ from src.api.db.database import SessionLocal
 import src.api.db.models as db_models
 import src.api.models as api_models
 
+load_dotenv()
 app = FastAPI(
     title="Bored Ape Yacht Club NFT Analytics API"
 )
@@ -38,7 +41,7 @@ def get_interval_date_range(interval: int):
     return interval_map.get(interval)
 
 @app.get("/api/v1/time-based-data", response_model=api_models.TimeBasedResponse, 
-         summary="Get time-based data", description="Get time-based data in requested interval")
+         summary="Get time-based data", description="Get time-based data in requested interval, including highest sale token ID.")
 async def time_based_data(
     interval: int = Query(..., description="0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time"),
     db: Session = Depends(get_db)
@@ -59,11 +62,30 @@ async def time_based_data(
 
     result = query.one()
 
+    #highest price
+    highest_price_query = db.query(
+        db_models.Transaction.token_id.label('token_id'),
+        db_models.Transaction.price.label('highest_price')
+    ).order_by(db_models.Transaction.price.desc())
+
+    if start_time:
+        highest_price_query = highest_price_query.filter(db_models.Transaction.time >= start_time)
+
+    highest_price_result = highest_price_query.first()
+
+    total_volume = float(result.total_volume or 0)
+    average_price = float(result.average_price or 0)
+    transaction_count = result.transaction_count or 0
+    highest_price_token_id = str(highest_price_result.token_id) if highest_price_result else "N/A"
+    highest_price = float(highest_price_result.highest_price) if highest_price_result else 0.0
+
     data = [
         api_models.TimeBasedData(
-            total_volume=float(result.total_volume or 0),
-            average_price=float(result.average_price or 0),
-            transaction_count=result.transaction_count or 0
+            total_volume=total_volume,
+            average_price=average_price,
+            transaction_count=transaction_count,
+            highest_price_token_id=highest_price_token_id,
+            highest_price=highest_price
         )
     ]
 
@@ -358,3 +380,43 @@ async def token_transaction(
             for record in data
         ]
     )
+
+@app.get("/api/v1/nft-details", response_model=api_models.NFTMetadata)
+async def get_nft_details(token_id: str = Query(..., description="Token ID (0-9999) for NFT details")):
+    try:
+        url = f"https://deep-index.moralis.io/api/v2.2/nft/0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D/{token_id}"
+        headers = {
+            "accept": "application/json",
+            "X-API-Key": os.getenv('MORALIS_APIKEY')
+        }
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail="Failed to fetch NFT details")
+
+        data = response.json()
+
+        if not data.get("token_id"):
+            raise HTTPException(status_code=404, detail="NFT not found")
+
+        metadata_raw = data.get("metadata", "{}")
+        metadata = {}
+        try:
+            metadata = json.loads(metadata_raw)
+        except json.JSONDecodeError:
+            metadata = {}
+
+        image_url = metadata.get("image") or data.get("normalized_metadata", {}).get("image")
+        if image_url and image_url.startswith("ipfs://"):
+            image_url = image_url.replace("ipfs://", "https://ipfs.io/ipfs/")
+       
+        rarity_rank = data.get("rarity_rank")
+
+        return api_models.NFTMetadata(
+            token_id=data.get("token_id"),
+            image_url=image_url,
+            rarity_rank=rarity_rank
+        )
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -33,11 +33,21 @@ async function fetchTimeBasedData(interval) {
   const totalVolumeEl = document.getElementById("total-volume");
   const averagePriceEl = document.getElementById("average-price");
   const transactionCountEl = document.getElementById("transaction-count");
+  const nftImageEl = document.getElementById("nft-image");
+  const nftRarityEl = document.getElementById("nft-rarity");
+  const highestPriceEl = document.getElementById("highest-price");
+  const highestPriceTokenIdEl = document.getElementById(
+    "highest-price-token-id"
+  );
   const errorTextEl = document.getElementById("time-based-error");
 
   totalVolumeEl.textContent = "-";
   averagePriceEl.textContent = "-";
   transactionCountEl.textContent = "-";
+  highestPriceEl.textContent = "-";
+  highestPriceTokenIdEl.textContent = "-";
+  nftImageEl.src = "";
+  nftRarityEl.textContent = "-";
   errorTextEl.classList.add("hidden");
   errorTextEl.textContent = "";
 
@@ -59,9 +69,17 @@ async function fetchTimeBasedData(interval) {
     averagePriceEl.textContent = `${Math.floor(
       data.data[0].average_price
     ).toLocaleString()} USD`;
-    transactionCountEl.textContent = `${Math.floor(
-      data.data[0].transaction_count
-    ).toLocaleString()} 次`;
+    transactionCountEl.textContent = `${data.data[0].transaction_count.toLocaleString()} 次`;
+    highestPriceEl.textContent = `${Math.floor(
+      data.data[0].highest_price
+    ).toLocaleString()} USD`;
+    highestPriceTokenIdEl.textContent = data.data[0].highest_price_token_id;
+
+    const highestPriceTokenId = data.data[0].highest_price_token_id;
+
+    if (highestPriceTokenId && highestPriceTokenId !== "N/A") {
+      await fetchNFTDetails(highestPriceTokenId);
+    }
   } catch (error) {
     console.error("Error fetching time-based data:", error);
     errorTextEl.textContent = "無法讀取時間維度資料，請稍後再試。";
@@ -202,6 +220,30 @@ async function fetchTokenTransactions() {
   } catch (error) {
     console.error("Error fetching token transactions:", error);
     errorText.textContent = "無法取得交易資料，請稍後再試。";
+  }
+}
+
+async function fetchNFTDetails(tokenId) {
+  const nftImageEl = document.getElementById("nft-image");
+  const nftRarityEl = document.getElementById("nft-rarity");
+
+  nftImageEl.src = "assets/placeholder.jpeg";
+  nftRarityEl.textContent = "-";
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/nft-details?token_id=${tokenId}`
+    );
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const nft = await response.json();
+
+    nftImageEl.src = nft.image_url;
+    nftRarityEl.textContent = nft.rarity_rank || "N/A";
+  } catch (error) {
+    console.error("Error fetching NFT details:", error);
   }
 }
 

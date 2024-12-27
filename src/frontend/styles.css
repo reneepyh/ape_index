@@ -4,11 +4,43 @@ body {
   padding: 0;
 }
 
-header {
-  background: #242424;
-  color: white;
-  padding: 1rem;
+.header-with-bg {
+  position: relative;
+  background: url("assets/banner.jpeg") no-repeat center center/cover;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.header-with-bg .header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.header-with-bg .header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.header-with-bg h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+.header-with-bg h2 {
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
 }
 
 nav {
@@ -67,32 +99,49 @@ div[id$="-chart"] {
 
 #time-based-summary {
   display: flex;
-  justify-content: space-around;
-  margin-top: 1.5rem;
+  flex-wrap: wrap;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.summary-card {
-  background: #f8f9fa;
+.nft-card {
+  flex: 1 1 500px;
+  max-width: 500px;
+  text-align: center;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
-  text-align: center;
-  flex: 1;
+  background-color: #fafafa;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.summary-card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
+.nft-card img {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin: 1rem auto;
 }
 
-.summary-card p {
-  font-size: 1.5rem;
+.nft-card p {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.combined-metrics-card {
+  flex: 2 1 300px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.combined-metrics-card p {
+  margin: 3rem 0;
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #0078d7;
-  margin: 0;
 }
 
 .error-text {
@@ -115,4 +164,27 @@ div[id$="-chart"] {
 
 .hidden {
   display: none;
+}
+
+.nft-display {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nft-display img {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.nft-display p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
 }
