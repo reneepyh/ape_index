@@ -104,30 +104,6 @@ div[id$="-chart"] {
   margin-top: 1.5rem;
 }
 
-.nft-card {
-  flex: 1 1 500px;
-  max-width: 500px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  background-color: #fafafa;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.nft-card img {
-  width: 200px;
-  height: 200px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin: 1rem auto;
-}
-
-.nft-card p {
-  margin: 0.5rem 0;
-  font-size: 1.2rem;
-}
-
 .combined-metrics-card {
   flex: 2 1 300px;
   text-align: center;
@@ -166,25 +142,128 @@ div[id$="-chart"] {
   display: none;
 }
 
-.nft-display {
+/* NFT Card Container for Top Resale Tokens */
+#top-resale-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin-top: 1.5rem;
-  text-align: center;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fafafa;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: stretch;
 }
 
-.nft-display img {
-  width: 200px;
+.nft-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+/* NFT Card Styling */
+.nft-card {
+  flex: 1 1 300px;
+  max-width: 300px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fafafa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nft-card img {
+  width: 100%;
+  max-width: 200px;
   height: 200px;
   border-radius: 8px;
   object-fit: cover;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
-.nft-display p {
-  margin: 0.5rem 0;
+.nft-card .nft-details {
   font-size: 1rem;
+  color: #333;
+  text-align: center;
+  width: 100%;
+}
+
+.nft-card .nft-details p {
+  margin: 0.3rem 0;
+}
+
+.nft-card .nft-details .token-id {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #0078d7;
+}
+
+.nft-card .nft-details .total-profit {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.nft-card .nft-details .rarity-rank {
+  font-size: 1rem;
+  color: #555;
+}
+
+.nft-card .nft-details .seller-address {
+  font-size: 0.9rem;
+  color: #6c757d;
+  word-break: break-all;
+}
+
+#resale-tokens-error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem auto;
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0078d7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .nft-card {
+    flex: 1 1 100%; /* Cards take full width on smaller screens */
+    max-width: 90%;
+  }
+
+  .nft-card img {
+    max-width: 150px;
+    height: 150px;
+  }
+
+  .nft-card .nft-details p {
+    font-size: 0.9rem;
+  }
 }

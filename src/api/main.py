@@ -243,12 +243,12 @@ async def marketplace_comparison_data(
     )
 
 @app.get(
-    "/api/v1/top-flip-token",
-    response_model=api_models.TopFlipTokenResponse,
-    summary="Top 5 tokens by largest single flip profit",
+    "/api/v1/top-resale-token",
+    response_model=api_models.TopResaleTokenResponse,
+    summary="Top 5 tokens by largest single resale profit",
     description="Get the Top 5 tokens with the largest single resale price difference, including the seller"
 )
-async def top_flip_token(
+async def top_resale_token(
     interval: int = Query(..., description="0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time"),
     db: Session = Depends(get_db)
 ):
@@ -310,10 +310,10 @@ async def top_flip_token(
         .all()
     )
 
-    return api_models.TopFlipTokenResponse(
+    return api_models.TopResaleTokenResponse(
         interval=interval,
         data=[
-            api_models.TopFlipTokenData(
+            api_models.TopResaleTokenData(
                 token_id=str(record.token_id),
                 total_profit=float(record.price_difference or 0),
                 seller=record.seller

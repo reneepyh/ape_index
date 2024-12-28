@@ -19,9 +19,9 @@ function showSection(sectionId) {
       fetchMarketplaceComparison(0);
       document.getElementById("marketplace-interval").value = "0";
       break;
-    case "flip-tokens":
-      fetchTopFlipTokens(0);
-      document.getElementById("flip-tokens-interval").value = "0";
+    case "resale-tokens":
+      fetchTopResaleTokens(0);
+      document.getElementById("resale-tokens-interval").value = "0";
       break;
     case "token-transaction":
       break;
@@ -46,7 +46,7 @@ async function fetchTimeBasedData(interval) {
   transactionCountEl.textContent = "-";
   highestPriceEl.textContent = "-";
   highestPriceTokenIdEl.textContent = "-";
-  nftImageEl.src = "";
+  nftImageEl.src = "assets/placeholder.jpeg";
   nftRarityEl.textContent = "-";
   errorTextEl.classList.add("hidden");
   errorTextEl.textContent = "";
@@ -55,6 +55,10 @@ async function fetchTimeBasedData(interval) {
     const response = await fetch(
       `${BASE_URL}/time-based-data?interval=${interval}`
     );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch time-based data: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (!data.data || data.data.length === 0) {
@@ -78,7 +82,10 @@ async function fetchTimeBasedData(interval) {
     const highestPriceTokenId = data.data[0].highest_price_token_id;
 
     if (highestPriceTokenId && highestPriceTokenId !== "N/A") {
-      await fetchNFTDetails(highestPriceTokenId);
+      const nft = await fetchNFTDetails(highestPriceTokenId);
+
+      nftImageEl.src = nft.image_url || "assets/placeholder.jpeg";
+      nftRarityEl.textContent = nft.rarity_rank || "N/A";
     }
   } catch (error) {
     console.error("Error fetching time-based data:", error);
@@ -241,27 +248,82 @@ async function fetchMarketplaceComparison(interval) {
   }
 }
 
-// Top Flip Tokens
-async function fetchTopFlipTokens(interval) {
+// Top Resale Tokens Display
+async function fetchTopResaleTokens(interval) {
+  const nftContainer = document.getElementById("top-resale-tokens");
+  const errorTextEl = document.getElementById("resale-tokens-error");
+  const loadingSpinner = document.getElementById("resale-loading");
+
+  nftContainer.innerHTML = "";
+  errorTextEl.textContent = "";
+  errorTextEl.classList.add("hidden");
+
   try {
+    loadingSpinner.classList.remove("hidden");
+
     const response = await fetch(
-      `${BASE_URL}/top-flip-token?interval=${interval}`
+      `${BASE_URL}/top-resale-token?interval=${interval}`
     );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch top resale tokens: ${response.status}`);
+    }
+
     const data = await response.json();
 
-    Plotly.newPlot(
-      "top-flip-tokens-chart",
-      [
-        {
-          x: data.data.map((token) => token.token_id),
-          y: data.data.map((token) => token.total_profit),
-          type: "bar",
-        },
-      ],
-      { title: "高利潤翻轉代幣" }
+    if (!data.data || data.data.length === 0) {
+      errorTextEl.textContent = "沒有資料";
+      errorTextEl.classList.remove("hidden");
+      return;
+    }
+
+    const nftDetails = await Promise.all(
+      data.data.map(async (token) => {
+        try {
+          const nft = await fetchNFTDetails(token.token_id);
+          return {
+            token_id: token.token_id,
+            total_profit: token.total_profit,
+            seller_address: token.seller || "N/A",
+            image_url: nft.image_url || "assets/placeholder.jpeg",
+            rarity_rank: nft.rarity_rank || "N/A",
+          };
+        } catch (error) {
+          console.warn(
+            `Failed to fetch NFT details for token ${token.token_id}`,
+            error
+          );
+          return {
+            token_id: token.token_id,
+            total_profit: token.total_profit,
+            seller_address: token.seller || "N/A",
+            image_url: "assets/placeholder.jpeg",
+            rarity_rank: "N/A",
+          };
+        }
+      })
     );
+
+    nftContainer.innerHTML = nftDetails
+      .map(
+        (token) => `
+                  <div class="nft-card">
+                      <img src="${token.image_url}" alt="NFT Image" />
+                      <div class="nft-details">
+                          <p class="token-id">Token ID: ${token.token_id}</p>
+                          <p><strong>利潤:</strong> ${token.total_profit} USD</p>
+                          <p><strong>稀有度排名:</strong> ${token.rarity_rank}</p>
+                          <p class="seller-address"><strong>賣家:</strong> ${token.seller_address}</p>
+                      </div>
+                  </div>
+              `
+      )
+      .join("");
   } catch (error) {
-    console.error("Error fetching top flip tokens:", error);
+    console.error("Error fetching top resale tokens:", error);
+    errorTextEl.textContent = "無法顯示轉售資料，請稍後再試。";
+    errorTextEl.classList.remove("hidden");
+  } finally {
+    loadingSpinner.classList.add("hidden");
   }
 }
 
@@ -314,26 +376,19 @@ async function fetchTokenTransactions() {
 }
 
 async function fetchNFTDetails(tokenId) {
-  const nftImageEl = document.getElementById("nft-image");
-  const nftRarityEl = document.getElementById("nft-rarity");
-
-  nftImageEl.src = "assets/placeholder.jpeg";
-  nftRarityEl.textContent = "-";
+  const loadingSpinner = document.getElementById("loading");
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/nft-details?token_id=${tokenId}`
-    );
+    const response = await fetch(`${BASE_URL}/nft-details?token_id=${tokenId}`);
     if (!response.ok) {
       throw new Error(`API call failed with status: ${response.status}`);
     }
 
     const nft = await response.json();
-
-    nftImageEl.src = nft.image_url;
-    nftRarityEl.textContent = nft.rarity_rank || "N/A";
+    return nft;
   } catch (error) {
-    console.error("Error fetching NFT details:", error);
+    console.error(`Error fetching NFT details for token ${tokenId}:`, error);
+    throw error;
   }
 }
 

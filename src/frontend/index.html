@@ -21,7 +21,7 @@
       <button onclick="showSection('time-based')">📊 時間維度分析</button>
       <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
       <button onclick="showSection('marketplace')">🏢 市場比較</button>
-      <button onclick="showSection('flip-tokens')">🔄 高利潤翻轉代幣</button>
+      <button onclick="showSection('resale-tokens')">🔄 最高轉售價差NFT</button>
       <button onclick="showSection('token-transaction')">🔗 NFT交易記錄</button>
     </nav>
 
@@ -69,7 +69,7 @@
 
     <section id="buyers-sellers" class="analysis-section hidden">
       <h2>🛍️ 主要買家與賣家</h2>
-      <p>這個分析顯示在特定時間範圍內，交易量最高的五位買家與賣家。</p>
+      <p>這個分析顯示在特定時間範圍內，BAYC NFT 交易量最高的五位買家與賣家。</p>
       <select
         id="buyers-sellers-interval"
         onchange="fetchTopBuyersSellers(this.value)"
@@ -86,8 +86,8 @@
     <section id="marketplace" class="analysis-section hidden">
       <h2>🏢 市場比較</h2>
       <p>
-        這個分析比較不同 NFT
-        市場上的交易總量、平均價格及交易次數，幫助您了解各市場的活躍度。
+        這個分析比較 BAYC NFT 在不同 NFT
+        市場上的交易總量、平均價格及交易次數，幫助了解各市場的活躍度。
       </p>
       <select
         id="marketplace-interval"
@@ -101,26 +101,29 @@
       <div id="marketplace-chart"></div>
     </section>
 
-    <section id="flip-tokens" class="analysis-section hidden">
-      <h2>🔄 高利潤翻轉代幣</h2>
+    <section id="resale-tokens" class="analysis-section hidden">
+      <h2>🔄 最高轉售價差NFT</h2>
       <p>
-        這個分析顯示五個最高利潤的代幣交易，揭示哪個代幣在單次交易中獲得最多利潤。
+        這個分析顯示五個最高利潤的 BAYC NFT 轉售，顯示哪個 NFT
+        在單次交易中獲得最多利潤。
       </p>
       <select
-        id="flip-tokens-interval"
-        onchange="fetchTopFlipTokens(this.value)"
+        id="resale-tokens-interval"
+        onchange="fetchTopResaleTokens(this.value)"
       >
         <option value="0">最近7天</option>
         <option value="1">最近30天</option>
         <option value="2">去年</option>
         <option value="3" selected>所有時間</option>
       </select>
-      <div id="top-flip-tokens-chart"></div>
+      <div id="top-resale-tokens" class="nft-card-container"></div>
+      <div id="resale-loading" class="loading-spinner hidden"></div>
+      <p id="resale-tokens-error" class="error-text hidden"></p>
     </section>
 
     <section id="token-transaction" class="analysis-section hidden">
       <h2>🔗 代幣交易記錄</h2>
-      <p>您可以輸入特定代幣 ID，並選擇時間區間，查看該代幣的交易歷史記錄。</p>
+      <p>輸入特定代幣 ID，並選擇時間區間，查看該代幣的交易歷史記錄。</p>
       <div>
         <input type="text" id="token-id" placeholder="輸入代幣 ID" />
         <select id="token-transaction-interval">

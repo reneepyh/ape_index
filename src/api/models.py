@@ -52,15 +52,15 @@ class MarketplaceComparisonResponse(BaseModel):
     )
     data: list[MarketplaceData] = Field(..., description="List of marketplace comparison data.")
 
-# Top Flip Token
-class TopFlipTokenData(BaseModel):
+# Top Resale Token
+class TopResaleTokenData(BaseModel):
     token_id: str = Field(..., description="Unique ID of the token.")
-    total_profit: float = Field(..., description="Profit from the largest single flip transaction.")
+    total_profit: float = Field(..., description="Profit from the largest single resale transaction.")
     seller: str = Field(..., description="Wallet address of the seller.")
 
-class TopFlipTokenResponse(BaseModel):
+class TopResaleTokenResponse(BaseModel):
     interval: int = Field(..., description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time.")
-    data: list[TopFlipTokenData] = Field(..., description="List of top 5 flip transactions with seller details.")
+    data: list[TopResaleTokenData] = Field(..., description="List of top 5 resale transactions with seller details.")
 
 # Token Transaction
 class TokenTransactionData(BaseModel):
