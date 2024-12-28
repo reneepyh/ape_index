@@ -31,6 +31,20 @@ function showSection(sectionId) {
       document.getElementById("resale-tokens-interval").value = "0";
       break;
     case "token-transaction":
+      const tokenDetailsEl = document.getElementById("token-details");
+      const tokenImageEl = document.getElementById("token-image");
+      const tokenRarityEl = document.getElementById("token-rarity");
+      const tokenIdDisplayEl = document.getElementById("token-id-display");
+      const tokenIdInput = document.getElementById("token-id");
+      const tokenChartEl = document.getElementById("token-transaction-chart");
+
+      tokenDetailsEl.classList.add("hidden");
+      tokenChartEl.classList.add("hidden");
+      tokenImageEl.src = "assets/placeholder.jpeg";
+      tokenRarityEl.textContent = "-";
+      tokenIdDisplayEl.textContent = "-";
+      tokenIdInput.value = "";
+      tokenChartEl.innerHTML = "";
       break;
   }
 }
@@ -375,9 +389,19 @@ async function fetchTokenTransactions() {
   const emptyText = document.getElementById("token-transaction-empty");
   const chartContainer = document.getElementById("token-transaction-chart");
 
+  const tokenDetailsEl = document.getElementById("token-details");
+  const tokenImageEl = document.getElementById("token-image");
+  const tokenRarityEl = document.getElementById("token-rarity");
+  const tokenIdDisplayEl = document.getElementById("token-id-display");
+  const tokenChartEl = document.getElementById("token-transaction-chart");
+
   errorText.textContent = "";
   emptyText.classList.add("hidden");
   chartContainer.innerHTML = "";
+  tokenDetailsEl.classList.add("hidden");
+  tokenImageEl.src = "assets/placeholder.jpeg";
+  tokenRarityEl.textContent = "-";
+  tokenIdDisplayEl.textContent = "-";
 
   const tokenIdInt = parseInt(tokenId, 10);
   if (isNaN(tokenIdInt) || tokenIdInt < 0 || tokenIdInt > 9999) {
@@ -386,9 +410,20 @@ async function fetchTokenTransactions() {
   }
 
   try {
+    const nft = await fetchNFTDetails(tokenIdInt);
+    tokenImageEl.src = nft.image_url || "assets/placeholder.jpeg";
+    tokenRarityEl.textContent = nft.rarity_rank || "N/A";
+    tokenIdDisplayEl.textContent = tokenIdInt;
+    tokenDetailsEl.classList.remove("hidden");
+    tokenChartEl.classList.remove("hidden");
+
     const response = await fetch(
       `${BASE_URL}/token-transaction?token_id=${tokenIdInt}&interval=${interval}`
     );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch token transactions: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (!data.data || data.data.length === 0) {
@@ -402,11 +437,28 @@ async function fetchTokenTransactions() {
         {
           x: data.data.map((tx) => tx.sold_date),
           y: data.data.map((tx) => tx.price),
+          text: data.data.map((tx) => tx.buyer_address),
           mode: "lines+markers",
           type: "scatter",
+          marker: { size: 8, color: "#0078D7" },
+          hovertemplate:
+            "<b>日期:</b> %{x}<br>" +
+            "<b>價格:</b> %{y:.2f} USD<br>" +
+            "<b>買家地址:</b> %{text}<extra></extra>",
         },
       ],
-      { title: `代幣 ${tokenIdInt} 交易記錄` }
+      {
+        title: `Token ID ${tokenIdInt} 交易記錄`,
+        xaxis: {
+          title: "交易日期",
+          type: "date",
+          tickformat: "%Y-%m-%d",
+          automargin: true,
+        },
+        yaxis: { title: "價格(USD)", tickformat: ",d", automargin: true },
+        automargin: true,
+        height: 400,
+      }
     );
   } catch (error) {
     console.error("Error fetching token transactions:", error);

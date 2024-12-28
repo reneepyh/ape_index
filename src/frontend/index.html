@@ -22,7 +22,7 @@
       <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
       <button onclick="showSection('marketplace')">🏢 市場比較</button>
       <button onclick="showSection('resale-tokens')">🔄 最高轉售價差NFT</button>
-      <button onclick="showSection('token-transaction')">🔗 NFT交易記錄</button>
+      <button onclick="showSection('token-transaction')">🔗 NFT交易歷史</button>
     </nav>
 
     <!-- Analysis Sections -->
@@ -128,21 +128,33 @@
     </section>
 
     <section id="token-transaction" class="analysis-section hidden">
-      <h2>🔗 代幣交易記錄</h2>
-      <p>輸入特定代幣 ID，並選擇時間區間，查看該代幣的交易歷史記錄。</p>
+      <h2>🔗 NFT交易歷史</h2>
+      <p>輸入BAYC Token ID，並選擇時間區間，查看該 NFT 的交易歷史記錄。</p>
       <div>
-        <input type="text" id="token-id" placeholder="輸入代幣 ID" />
+        <input type="text" id="token-id" placeholder="輸入Token ID" />
         <select id="token-transaction-interval">
           <option value="0">最近7天</option>
           <option value="1">最近30天</option>
           <option value="2">去年</option>
           <option value="3" selected>所有時間</option>
         </select>
-        <button onclick="fetchTokenTransactions()">查詢代幣資料</button>
+        <button onclick="fetchTokenTransactions()">查詢</button>
       </div>
       <p id="token-transaction-error" class="error-text"></p>
       <p id="token-transaction-empty" class="empty-text hidden">沒有交易資料</p>
-      <div id="token-transaction-chart"></div>
+
+      <div id="token-transaction-container" class="transaction-container">
+        <div id="token-details" class="nft-card hidden">
+          <img id="token-image" src="assets/placeholder.jpeg" alt="NFT Image" />
+          <div class="nft-details">
+            <p class="token-id">
+              <strong>Token ID:</strong> <span id="token-id-display">-</span>
+            </p>
+            <p><strong>稀有度排名:</strong> <span id="token-rarity">-</span></p>
+          </div>
+        </div>
+        <div id="token-transaction-chart"></div>
+      </div>
     </section>
 
     <script src="main.js"></script>
