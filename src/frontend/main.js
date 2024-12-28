@@ -198,16 +198,43 @@ async function fetchMarketplaceComparison(interval) {
     );
     const data = await response.json();
 
+    const marketColors = {
+      OpenSea: "#636efa",
+      LooksRare: "#EF553B",
+      X2Y2: "#00cc96",
+      Blur: "#FFA15A",
+      Seaport: "#FF6692",
+      Rarible: "#B6E880",
+      "0x Protocol": "#FF97FF",
+    };
+
+    const colors = data.data.map(
+      (market) => marketColors[market.marketplace] || "#808080"
+    );
+
     Plotly.newPlot(
       "marketplace-chart",
       [
         {
-          x: data.data.map((market) => market.marketplace),
-          y: data.data.map((market) => market.total_volume),
-          type: "bar",
+          labels: data.data.map((market) => market.marketplace),
+          values: data.data.map((market) => market.total_volume),
+          type: "pie",
+          textinfo: "label+percent",
+          hoverinfo: "label+value+percent",
+          hovertemplate:
+            "<b>%{label}</b><br>" +
+            "總銷售量: %{value}<br>" +
+            "佔比: %{percent}<extra></extra>",
+          marker: {
+            colors: colors,
+          },
         },
       ],
-      { title: "市場比較" }
+      {
+        title: "市場比較",
+        height: 400,
+        width: 600,
+      }
     );
   } catch (error) {
     console.error("Error fetching marketplace comparison:", error);
