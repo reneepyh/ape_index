@@ -142,7 +142,34 @@ div[id$="-chart"] {
   display: none;
 }
 
-/* NFT Card Container for Top Resale Tokens */
+.toggle-buttons {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.toggle-buttons button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.toggle-buttons button.active {
+  background-color: #0078d7;
+  color: white;
+  border: 1px solid #0078d7;
+}
+
+.error-text {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+}
+
 #top-resale-tokens {
   display: flex;
   flex-wrap: wrap;
@@ -160,7 +187,6 @@ div[id$="-chart"] {
   justify-content: center;
 }
 
-/* NFT Card Styling */
 .nft-card {
   flex: 1 1 300px;
   max-width: 300px;
@@ -254,7 +280,7 @@ div[id$="-chart"] {
 
 @media (max-width: 768px) {
   .nft-card {
-    flex: 1 1 100%; /* Cards take full width on smaller screens */
+    flex: 1 1 100%;
     max-width: 90%;
   }
 

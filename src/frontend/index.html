@@ -85,10 +85,7 @@
 
     <section id="marketplace" class="analysis-section hidden">
       <h2>🏢 市場比較</h2>
-      <p>
-        這個分析比較 BAYC NFT 在不同 NFT
-        市場上的交易總量、平均價格及交易次數，幫助了解各市場的活躍度。
-      </p>
+      <p>這個分析顯示不同市場的 BAYC NFT 總銷售量和交易次數。</p>
       <select
         id="marketplace-interval"
         onchange="fetchMarketplaceComparison(this.value)"
@@ -98,7 +95,16 @@
         <option value="2">去年</option>
         <option value="3" selected>所有時間</option>
       </select>
+      <div class="toggle-buttons">
+        <button id="toggle-volume" onclick="updateMarketplaceChart('volume')">
+          總銷售量
+        </button>
+        <button id="toggle-trade" onclick="updateMarketplaceChart('trade')">
+          交易次數
+        </button>
+      </div>
       <div id="marketplace-chart"></div>
+      <p id="marketplace-error" class="error-text hidden"></p>
     </section>
 
     <section id="resale-tokens" class="analysis-section hidden">

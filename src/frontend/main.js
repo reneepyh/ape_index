@@ -1,5 +1,12 @@
 const BASE_URL = "http://localhost:8000/api/v1";
 
+let marketplaceData = {
+  volume: [],
+  trade: [],
+  labels: [],
+  colors: [],
+};
+
 function showSection(sectionId) {
   document.querySelectorAll(".analysis-section").forEach((section) => {
     section.classList.add("hidden");
@@ -199,10 +206,21 @@ async function fetchTopBuyersSellers(interval) {
 
 // Marketplace Comparison
 async function fetchMarketplaceComparison(interval) {
+  const errorTextEl = document.getElementById("marketplace-error");
+
+  errorTextEl.textContent = "";
+  errorTextEl.classList.add("hidden");
+
   try {
     const response = await fetch(
       `${BASE_URL}/marketplace-comparison?interval=${interval}`
     );
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch marketplace comparison: ${response.status}`
+      );
+    }
+
     const data = await response.json();
 
     const marketColors = {
@@ -215,37 +233,58 @@ async function fetchMarketplaceComparison(interval) {
       "0x Protocol": "#FF97FF",
     };
 
-    const colors = data.data.map(
+    marketplaceData.labels = data.data.map((market) => market.marketplace);
+    marketplaceData.volume = data.data.map((market) => market.total_volume);
+    marketplaceData.trade = data.data.map((market) => market.transaction_count);
+    marketplaceData.colors = data.data.map(
       (market) => marketColors[market.marketplace] || "#808080"
     );
 
-    Plotly.newPlot(
-      "marketplace-chart",
-      [
-        {
-          labels: data.data.map((market) => market.marketplace),
-          values: data.data.map((market) => market.total_volume),
-          type: "pie",
-          textinfo: "label+percent",
-          hoverinfo: "label+value+percent",
-          hovertemplate:
-            "<b>%{label}</b><br>" +
-            "總銷售量: %{value}<br>" +
-            "佔比: %{percent}<extra></extra>",
-          marker: {
-            colors: colors,
-          },
-        },
-      ],
-      {
-        title: "市場比較",
-        height: 400,
-        width: 600,
-      }
-    );
+    updateMarketplaceChart("volume");
   } catch (error) {
     console.error("Error fetching marketplace comparison:", error);
+    errorTextEl.textContent = "無法顯示市場比較資料，請稍後再試。";
+    errorTextEl.classList.remove("hidden");
   }
+}
+
+function updateMarketplaceChart(metric) {
+  document.getElementById("toggle-volume").classList.remove("active");
+  document.getElementById("toggle-trade").classList.remove("active");
+  document
+    .getElementById(metric === "volume" ? "toggle-volume" : "toggle-trade")
+    .classList.add("active");
+
+  const values =
+    metric === "volume" ? marketplaceData.volume : marketplaceData.trade;
+  const title = metric === "volume" ? "總銷售量比較" : "交易次數比較";
+
+  Plotly.newPlot(
+    "marketplace-chart",
+    [
+      {
+        labels: marketplaceData.labels,
+        values: values,
+        type: "pie",
+        textinfo: "label+percent",
+        hoverinfo: "label+value+percent",
+        hovertemplate: `<b>%{label}</b><br>
+                   ${
+                     metric === "volume" ? "總銷售量 (USD)" : "交易次數"
+                   }: %{value}<br>
+                   佔比: %{percent}<extra></extra>`,
+        marker: {
+          colors: marketplaceData.colors,
+        },
+      },
+    ],
+    {
+      title: title,
+      height: 400,
+      width: 600,
+      showlegend: true,
+    }
+  );
 }
 
 // Top Resale Tokens Display
@@ -376,8 +415,6 @@ async function fetchTokenTransactions() {
 }
 
 async function fetchNFTDetails(tokenId) {
-  const loadingSpinner = document.getElementById("loading");
-
   try {
     const response = await fetch(`${BASE_URL}/nft-details?token_id=${tokenId}`);
     if (!response.ok) {
@@ -388,7 +425,10 @@ async function fetchNFTDetails(tokenId) {
     return nft;
   } catch (error) {
     console.error(`Error fetching NFT details for token ${tokenId}:`, error);
-    throw error;
+    return {
+      image_url: "assets/placeholder.jpeg",
+      rarity_rank: "N/A",
+    };
   }
 }
 
