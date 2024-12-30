@@ -1,0 +1,283 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary-color: #0078d7;
+  --secondary-color: #f8f9fa;
+  --accent-color: #005ea2;
+  --error-color: #e74c3c;
+  --success-color: #28a745;
+}
+
+.header-with-bg {
+  position: relative;
+  background: url("assets/banner.jpeg") no-repeat center center/cover;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.header-with-bg .header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.header-with-bg .header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.header-with-bg h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.header-with-bg h2 {
+  font-size: 1.5rem;
+  font-weight: normal;
+  margin: 0.5rem 0 0;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  margin: 1rem 0;
+  background: var(--secondary-color);
+  padding: 0.7rem;
+  flex-wrap: wrap;
+}
+
+nav button {
+  font-size: 1rem;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+  margin: 0.3rem;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background-color: var(--accent-color);
+}
+
+nav button.active {
+  background-color: var(--success-color);
+}
+
+.analysis-section {
+  margin: 2rem;
+  display: none;
+}
+
+.analysis-section:not(.hidden) {
+  display: block;
+}
+
+h2 {
+  margin-top: 2rem;
+  font-size: 1.8rem;
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+select,
+input,
+button {
+  margin: 1rem 0;
+  padding: 0.6rem;
+  font-size: 1rem;
+}
+
+select,
+input[type="text"] {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+}
+
+#time-based-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 1.5rem;
+}
+
+.nft-card {
+  flex: 1 1 calc(33.33% - 1.5rem);
+  max-width: calc(33.33% - 1.5rem);
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.2rem;
+  background-color: var(--secondary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.nft-card .nft-details {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  width: 100%;
+}
+
+.nft-card .nft-details p {
+  margin: 0.3rem 0;
+}
+
+.nft-card .nft-details .seller-address {
+  font-size: 0.9rem;
+  color: #6c757d;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+.nft-card:hover {
+  transform: translateY(-5px);
+}
+
+.nft-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 1.5rem;
+}
+
+.nft-card img {
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 0.8rem;
+}
+
+div[id$="-chart"] {
+  width: 100%;
+  height: 400px;
+  margin-top: 1.5rem;
+}
+
+.combined-metrics-card {
+  flex: 2 1 300px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: var(--secondary-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.error-text {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.empty-text {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.toggle-buttons {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.toggle-buttons button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--secondary-color);
+  color: #333;
+}
+
+.toggle-buttons button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem auto;
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@media (max-width: 992px) {
+  .nft-card {
+    flex: 1 1 calc(50% - 1.5rem); /* Switch to 2 cards per row on medium screens */
+    max-width: calc(50% - 1.5rem);
+  }
+}
+
+@media (max-width: 576px) {
+  .nft-card {
+    flex: 1 1 100%; /* One card per row on small screens */
+    max-width: 100%;
+  }
+}
+
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ape Index - BAYC NFT 分析儀表板</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header-with-bg">
+      <div class="header-overlay"></div>
+      <div class="header-content">
+        <h1>Ape Index</h1>
+        <h2>無聊猿 Bored Ape Yacht Club (BAYC) NFT 分析儀表板</h2>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav>
+      <button onclick="showSection('time-based')">📊 時間維度分析</button>
+      <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
+      <button onclick="showSection('marketplace')">🏢 市場比較</button>
+      <button onclick="showSection('resale-tokens')">🔄 最高轉售價差NFT</button>
+      <button onclick="showSection('token-transaction')">🔗 NFT交易歷史</button>
+    </nav>
+
+    <!-- Analysis Sections -->
+    <section id="time-based" class="analysis-section">
+      <h2>📊 時間維度分析</h2>
+      <p>
+        此分析展示指定時間範圍內最高價售出的 BAYC NFT、BAYC NFT
+        總銷售量、平均價格和交易次數。
+      </p>
+      <select
+        id="time-based-interval"
+        onchange="fetchTimeBasedData(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="time-based-summary">
+        <div class="summary-card nft-card">
+          <h3>🏆 最高售價 NFT</h3>
+          <img id="nft-image" src="" alt="NFT Image" />
+          <p>
+            <strong>Token ID:</strong>
+            <span id="highest-price-token-id">-</span>
+          </p>
+          <p><strong>售價:</strong> <span id="highest-price">-</span></p>
+          <p>
+            <strong>稀有度排名:</strong> <span id="nft-rarity">-</span> / 10000
+          </p>
+        </div>
+
+        <div class="summary-card combined-metrics-card">
+          <h3>📊 銷售數據概覽</h3>
+          <p><strong>總銷售量:</strong> <span id="total-volume">-</span></p>
+          <p><strong>平均價格:</strong> <span id="average-price">-</span></p>
+          <p>
+            <strong>交易次數:</strong> <span id="transaction-count">-</span>
+          </p>
+        </div>
+      </div>
+      <p id="time-based-error" class="error-text hidden"></p>
+    </section>
+
+    <section id="buyers-sellers" class="analysis-section hidden">
+      <h2>🛍️ 主要買家與賣家</h2>
+      <p>這個分析顯示在特定時間範圍內，BAYC NFT 交易量最高的五位買家與賣家。</p>
+      <select
+        id="buyers-sellers-interval"
+        onchange="fetchTopBuyersSellers(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="top-buyers-chart"></div>
+      <div id="top-sellers-chart"></div>
+    </section>
+
+    <section id="marketplace" class="analysis-section hidden">
+      <h2>🏢 市場比較</h2>
+      <p>這個分析顯示不同市場的 BAYC NFT 總銷售量和交易次數。</p>
+      <select
+        id="marketplace-interval"
+        onchange="fetchMarketplaceComparison(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div class="toggle-buttons">
+        <button id="toggle-volume" onclick="updateMarketplaceChart('volume')">
+          總銷售量
+        </button>
+        <button id="toggle-trade" onclick="updateMarketplaceChart('trade')">
+          交易次數
+        </button>
+      </div>
+      <div id="marketplace-chart"></div>
+      <p id="marketplace-error" class="error-text hidden"></p>
+    </section>
+
+    <section id="resale-tokens" class="analysis-section hidden">
+      <h2>🔄 最高轉售價差NFT</h2>
+      <p>
+        這個分析顯示五個最高利潤的 BAYC NFT 轉售，顯示哪個 NFT
+        在單次交易中獲得最多利潤。
+      </p>
+      <select
+        id="resale-tokens-interval"
+        onchange="fetchTopResaleTokens(this.value)"
+      >
+        <option value="0">最近7天</option>
+        <option value="1">最近30天</option>
+        <option value="2">去年</option>
+        <option value="3" selected>所有時間</option>
+      </select>
+      <div id="top-resale-tokens" class="nft-card-container"></div>
+      <div id="resale-loading" class="loading-spinner hidden"></div>
+      <p id="resale-tokens-error" class="error-text hidden"></p>
+    </section>
+
+    <section id="token-transaction" class="analysis-section hidden">
+      <h2>🔗 NFT交易歷史</h2>
+      <p>輸入 BAYC Token ID，並選擇時間區間，查看該 NFT 的交易歷史記錄。</p>
+      <div>
+        <input type="text" id="token-id" placeholder="輸入Token ID" />
+        <select id="token-transaction-interval">
+          <option value="0">最近7天</option>
+          <option value="1">最近30天</option>
+          <option value="2">去年</option>
+          <option value="3" selected>所有時間</option>
+        </select>
+        <button onclick="fetchTokenTransactions()">查詢</button>
+      </div>
+      <p id="token-transaction-error" class="error-text"></p>
+      <p id="token-transaction-empty" class="empty-text hidden">沒有交易資料</p>
+
+      <div id="token-transaction-container" class="transaction-container">
+        <div id="token-details" class="nft-card hidden">
+          <img id="token-image" src="assets/placeholder.jpeg" alt="NFT Image" />
+          <div class="nft-details">
+            <p class="token-id">
+              <strong>Token ID:</strong> <span id="token-id-display">-</span>
+            </p>
+            <p><strong>稀有度排名:</strong> <span id="token-rarity">-</span></p>
+          </div>
+        </div>
+        <div id="token-transaction-chart"></div>
+      </div>
+    </section>
+
+    <script src="main.js"></script>
+  </body>
+</html>

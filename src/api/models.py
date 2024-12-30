@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
 from enum import Enum
+from typing import Optional
 
 class Interval(int, Enum):
     LAST_7_DAYS = 0
@@ -13,6 +14,8 @@ class TimeBasedData(BaseModel):
     total_volume: float = Field(None, description="Total sales volume.")
     average_price: float = Field(None, description="Average sale price.")
     transaction_count: int = Field(..., description="Number of transactions.")
+    highest_price_token_id: str = Field(None, description="Token ID of the highest sale.")
+    highest_price: float = Field(None, description="Highest sale price.")
 
 class TimeBasedResponse(BaseModel):
     interval: Interval = Field(
@@ -49,15 +52,15 @@ class MarketplaceComparisonResponse(BaseModel):
     )
     data: list[MarketplaceData] = Field(..., description="List of marketplace comparison data.")
 
-# Top Flip Token
-class TopFlipTokenData(BaseModel):
+# Top Resale Token
+class TopResaleTokenData(BaseModel):
     token_id: str = Field(..., description="Unique ID of the token.")
-    total_profit: float = Field(..., description="Profit from the largest single flip transaction.")
+    total_profit: float = Field(..., description="Profit from the largest single resale transaction.")
     seller: str = Field(..., description="Wallet address of the seller.")
 
-class TopFlipTokenResponse(BaseModel):
+class TopResaleTokenResponse(BaseModel):
     interval: int = Field(..., description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time.")
-    data: list[TopFlipTokenData] = Field(..., description="List of top 5 flip transactions with seller details.")
+    data: list[TopResaleTokenData] = Field(..., description="List of top 5 resale transactions with seller details.")
 
 # Token Transaction
 class TokenTransactionData(BaseModel):
@@ -73,3 +76,9 @@ class TokenTransactionResponse(BaseModel):
         description="Interval for analysis: 0 = last 7 days, 1 = last 30 days, 2 = last year, 3 = all time."
     )
     data: list[TokenTransactionData] = Field(..., description="List of transaction data for the token.")
+
+# NFT Metadata
+class NFTMetadata(BaseModel):
+    token_id: str = Field(..., description="The unique ID of the NFT token.")
+    image_url: Optional[str] = Field(None, description="URL of the NFT image.")
+    rarity_rank: Optional[int] = Field(None, description="The rarity rank of the NFT in the collection.")
