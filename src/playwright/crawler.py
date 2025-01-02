@@ -1,7 +1,6 @@
 import os
 import csv
 import pandas as pd
-from pathlib import Path
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 
