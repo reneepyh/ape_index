@@ -1,5 +1,4 @@
-const BASE_URL =
-  "http://backend-alb-25600667.ap-southeast-2.elb.amazonaws.com/api/v1";
+const BASE_URL = "/api/v1";
 
 let marketplaceData = {
   volume: [],
