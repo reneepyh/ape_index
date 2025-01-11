@@ -14,14 +14,6 @@ app = FastAPI(
     title="Bored Ape Yacht Club NFT Analytics API"
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 def get_db():
     db = SessionLocal()
     try:
