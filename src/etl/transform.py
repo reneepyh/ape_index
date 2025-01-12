@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 class DataTransformer:
     def __init__(self, db):
+        load_dotenv()
         self.db = db
         self.s3_client = boto3.client('s3')
         self.market_mapping = {}

@@ -5,7 +5,7 @@ from io import StringIO
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 
-class Crawler:
+class DataExtractor:
     def __init__(self, base_url):
         load_dotenv()
         self.base_url = base_url
@@ -131,7 +131,7 @@ class Crawler:
 
 
 if __name__ == "__main__":
-    crawler = Crawler(base_url=os.getenv('CRAW_PAGE'))
+    crawler = DataExtractor(base_url=os.getenv('CRAW_PAGE'))
     crawler.crawl_pages_with_limit(page_limit=2)
     crawler.save_raw_to_s3(key='raw-data/test')
 

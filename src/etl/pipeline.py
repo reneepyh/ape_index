@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from src.playwright.crawler import Crawler
+from src.etl.playwright.extract import DataExtractor
 from src.etl.db.manager import DataBaseManager
 from src.etl.transform import DataTransformer
 from src.etl.load import DataLoader
@@ -11,7 +11,7 @@ class Pipeline:
         load_dotenv()
         
         self.db = DataBaseManager()
-        self.crawler = Crawler(base_url=os.getenv('CRAW_PAGE'))
+        self.crawler = DataExtractor(base_url=os.getenv('CRAW_PAGE'))
         self.transformer = DataTransformer(db=self.db)
         self.loader = DataLoader(db=self.db)
     
@@ -53,3 +53,11 @@ class Pipeline:
         self.loader.insert_transactions(transactions_df=normalize_transactions)
 
         self.loader.close_connection()
+
+if __name__ == '__main__':
+    try:
+        pipeline = Pipeline()
+        pipeline.run()
+        print('ETL pipeline executed successfully.')
+    except Exception as e:
+        print(f'Error occurred while running the pipeline: {e}')
