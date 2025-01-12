@@ -1,10 +1,8 @@
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
 from src.playwright.crawler import Crawler
 from src.etl.db.manager import DataBaseManager
-from src.etl.extract import DataExtractor
 from src.etl.transform import DataTransformer
 from src.etl.load import DataLoader
 
@@ -14,7 +12,6 @@ class Pipeline:
         
         self.db = DataBaseManager()
         self.crawler = Crawler(base_url=os.getenv('CRAW_PAGE'))
-        self.extractor = DataExtractor()
         self.transformer = DataTransformer(db=self.db)
         self.loader = DataLoader(db=self.db)
     
@@ -24,20 +21,22 @@ class Pipeline:
         last_known_time = latest[0] if latest else None
         self.crawler.crawl_all_pages(last_known_time=last_known_time)
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        raw_key = f"raw-data/transactions_{current_time}.csv"
+        new_data_saved = self.crawler.save_raw_to_s3(key=raw_key)
 
-        folder_path = Path("src/etl/db/raw")
-        folder_path.mkdir(parents=True, exist_ok=True)
-        file_path = folder_path / f'transactions_{current_time}.csv'
-        saved_file = self.crawler.save_to_csv(file_path)
-
-        if not saved_file:
+        if not new_data_saved:
             print("No new data crawled. Exit pipeline.")
             self.loader.close_connection()
             return
         
-        raw_data = self.extractor.load_csv(csv_path=file_path)
+        raw_data = self.transformer.load_from_s3(key=raw_key)
         cleaned_data = self.transformer.clean_csv(df=raw_data)
+        cleaned_key = f"cleaned-data/transactions_cleaned_{current_time}.csv"
+        self.transformer.save_cleaned_to_s3(key=cleaned_key, df=cleaned_data)
 
+        self._load_to_rds(cleaned_data)
+
+    def _load_to_rds(self, cleaned_data):
         markets_df = self.transformer.extract_unique_markets(cleaned_data)
         self.loader.insert_markets(markets_df=markets_df)
         self.transformer.create_markets_mapping()

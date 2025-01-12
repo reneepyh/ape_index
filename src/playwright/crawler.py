@@ -1,6 +1,7 @@
 import os
-import csv
 import pandas as pd
+import boto3
+from io import StringIO
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 
@@ -9,6 +10,7 @@ class Crawler:
         load_dotenv()
         self.base_url = base_url
         self.data = []
+        self.s3_client = boto3.client('s3')
         self.stop_crawling = False
 
     def crawl_all_pages(self, last_known_time=None):
@@ -79,25 +81,25 @@ class Crawler:
                 "Token ID": nft_id
             })
 
-    def save_to_csv(self, folder="src/db/raw"):
+    def save_raw_to_s3(self, key):
         if not self.data:
             print("No data to save.")
-            return None
+            return False
 
-        fieldnames = self.data[0].keys()
+        #轉為CSV
+        df = pd.DataFrame(self.data)
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
 
+        #存到S3
         try:
-            with open(folder, mode='w', newline='', encoding='utf-8') as file:
-                writer = csv.DictWriter(file, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(self.data)
-
-            print(f"Data successfully saved to {folder}")
-            return folder
-        except Exception as e:
-            print(f"Error occurred while saving to CSV: {e}")
-            return None
-
+            self.s3_client.put_object(Bucket=os.getenv('BUCKET_NAME'), Key=key, Body=csv_buffer.getvalue())
+            print(f"Data successfully saved to s3://{os.getenv('BUCKET_NAME')}/{key}")
+            return True
+        except Exception as e:  
+            print(f"Error saving data to S3: {e}")
+            return False
+            
     def crawl_pages_with_limit(self, page_limit=2):
         current_page = 0
 
@@ -120,6 +122,7 @@ class Crawler:
 
                     next_button.click()
                     page.wait_for_timeout(2000)
+                    current_page += 1
                 except Exception as e:
                     print("Error occurred during pagination:", e)
                     break
@@ -129,6 +132,6 @@ class Crawler:
 
 if __name__ == "__main__":
     crawler = Crawler(base_url=os.getenv('CRAW_PAGE'))
-    crawler.crawl_all_pages()
-    crawler.save_to_csv('transactions.csv')
+    crawler.crawl_pages_with_limit(page_limit=2)
+    crawler.save_raw_to_s3(key='raw-data/test')
 
