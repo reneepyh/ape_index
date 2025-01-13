@@ -15,9 +15,10 @@ class DataExtractor:
 
     def crawl_all_pages(self, last_known_time=None):
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--single-process"])
             page = browser.new_page()
-            page.goto(self.base_url)
+            page.set_default_timeout(120000)
+            page.goto(self.base_url, wait_until="domcontentloaded")
 
             while True:
                 page.wait_for_selector("#datatable", state="visible")
@@ -37,7 +38,7 @@ class DataExtractor:
                         break
 
                     next_button.click()
-                    page.wait_for_timeout(2000)
+                    page.wait_for_timeout(120_000)
                 except Exception as e:
                     print("Error occurred during pagination:", e)
                     break

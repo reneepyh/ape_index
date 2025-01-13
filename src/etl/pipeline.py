@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from src.etl.playwright.extract import DataExtractor
-from src.etl.db.manager import DataBaseManager
-from src.etl.transform import DataTransformer
-from src.etl.load import DataLoader
+from db.manager import DataBaseManager
+from extract import DataExtractor
+from transform import DataTransformer
+from load import DataLoader
 
 class Pipeline:
     def __init__(self):
@@ -53,11 +53,3 @@ class Pipeline:
         self.loader.insert_transactions(transactions_df=normalize_transactions)
 
         self.loader.close_connection()
-
-if __name__ == '__main__':
-    try:
-        pipeline = Pipeline()
-        pipeline.run()
-        print('ETL pipeline executed successfully.')
-    except Exception as e:
-        print(f'Error occurred while running the pipeline: {e}')
