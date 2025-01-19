@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import boto3
+from botocore.exceptions import NoCredentialsError
 from io import StringIO
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
@@ -15,11 +16,44 @@ class DataExtractor:
 
     def crawl_all_pages(self, last_known_time=None):
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--single-process"])
-            page = browser.new_page()
-            page.set_default_timeout(120000)
-            page.goto(self.base_url, wait_until="domcontentloaded")
-
+            browser = p.chromium.launch(
+            proxy={
+                "server": os.getenv('PROXY_SERVER'),
+                "username": os.getenv('PROXY_USER'),
+                "password": os.getenv('PROXY_PASSWORD'),
+            },
+        )
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
+                           "AppleWebKit/537.36 (KHTML, like Gecko) "
+                           "Chrome/131.0.0.0 Mobile Safari/537.36",
+                locale="zh-TW",
+                extra_http_headers={
+                    "Accept": "*/*",
+                    "Accept-Encoding": "gzip, deflate, br, zstd",
+                    "Accept-Language": "zh-TW,zh;q=0.9",
+                    "Cache-Control": "no-cache",
+                    "DNT": "1",
+                    "Pragma": "no-cache",
+                    "Referer": os.getenv('CRAW_PAGE'),
+                    "Sec-Fetch-Dest": "script",
+                    "Sec-Fetch-Mode": "no-cors",
+                    "Sec-Fetch-Site": "same-origin"
+                }
+            )
+            page = context.new_page()
+            page.set_default_timeout(60000)
+            response = page.goto(self.base_url, wait_until="networkidle")
+            print(f"Page load response: {response.status}")
+            
+            if response.status != 200:
+                print("Failed to load page.")
+                with open("debug_page.html", "w") as f:
+                    f.write(page.content())
+                self._upload_to_s3("debug_page.html", os.getenv('BUCKET_NAME'), "debug/debug_page.html")
+                print("Page content saved for debugging.")
+                return
+            
             while True:
                 page.wait_for_selector("#datatable", state="visible")
                 self.__extract_data(page, last_known_time=last_known_time)
@@ -101,7 +135,7 @@ class DataExtractor:
             print(f"Error saving data to S3: {e}")
             return False
             
-    def crawl_pages_with_limit(self, page_limit=2):
+    def _crawl_pages_with_limit(self, page_limit=2):
         current_page = 0
 
         with sync_playwright() as p:
@@ -130,9 +164,17 @@ class DataExtractor:
                
             browser.close()
 
+    #debug用
+    def _upload_to_s3(self, file_name, bucket, object_name=None):
+        try:
+            response = self.s3_client.upload_file(file_name, bucket, object_name or file_name)
+            print(f"File uploaded to S3: s3://{bucket}/{object_name or file_name}")
+        except NoCredentialsError:
+            print("Credentials not available for S3 upload.")
+        except Exception as e:
+            print(f"Error uploading file to S3: {e}")
 
 if __name__ == "__main__":
     crawler = DataExtractor(base_url=os.getenv('CRAW_PAGE'))
-    crawler.crawl_pages_with_limit(page_limit=2)
-    crawler.save_raw_to_s3(key='raw-data/test')
+    crawler._crawl_pages_with_limit(page_limit=2)
 
