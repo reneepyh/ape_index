@@ -1,8 +1,14 @@
+import os
 import pandas as pd
+import boto3
+from io import StringIO
+from dotenv import load_dotenv
 
 class DataTransformer:
     def __init__(self, db):
+        load_dotenv()
         self.db = db
+        self.s3_client = boto3.client('s3')
         self.market_mapping = {}
         self.action_mapping = {}
         self.buyer_mapping = {}
@@ -90,3 +96,22 @@ class DataTransformer:
         df.drop(columns=['Action'], inplace=True)
         df.drop(columns=['Buyer'], inplace=True)
         return df
+    
+    def load_from_s3(self, key):
+        try:
+            response = self.s3_client.get_object(Bucket=os.getenv('BUCKET_NAME'), Key=key)
+            csv_data = response['Body'].read().decode('utf-8')
+            return pd.read_csv(StringIO(csv_data))
+        except Exception as e:
+            print(f"Error loading file from S3: {e}")
+            raise
+    
+    def save_cleaned_to_s3(self, key, df):
+        try:
+            csv_buffer = StringIO()
+            df.to_csv(csv_buffer, index=False)
+            self.s3_client.put_object(Bucket=os.getenv('BUCKET_NAME'), Key=key, Body=csv_buffer.getvalue())
+            print(f"File successfully saved to s3://{os.getenv('BUCKET_NAME')}/{key}")
+        except Exception as e:
+            print(f"Error saving file to S3: {e}")
+            raise
