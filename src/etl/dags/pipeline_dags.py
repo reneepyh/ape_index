@@ -16,7 +16,7 @@ with DAG(
     dag_id='trigger_ecs_task',
     default_args=DEFAULT_ARGS,
     description='DAG to trigger ECS Tasks for ETL pipeline',
-    schedule_interval='@daily',
+    schedule_interval='0 1 * * *',
     start_date=days_ago(1),
     catchup=False,
 ) as dag:
