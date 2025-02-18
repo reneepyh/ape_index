@@ -1,6 +1,5 @@
 import argparse
-import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_timestamp, regexp_extract, regexp_replace, when, lag
 from pyspark.sql.window import Window
@@ -8,22 +7,18 @@ from pyspark.sql.window import Window
 parser = argparse.ArgumentParser()
 parser.add_argument("--user")
 parser.add_argument("--password")
-parser.add_argument("--redshifturl")
-parser.add_argument("--tempdir")
-parser.add_argument("--s3rawdata")
 args = parser.parse_args()
 
 spark = SparkSession.builder.appName("ape-index").getOrCreate()
 spark.sparkContext.setLogLevel("DEBUG")
 
-REDSHIFT_URL = args.redshifturl
-TEMP_S3_PATH = args.tempdir
+REDSHIFT_URL = "jdbc:redshift://[REDACTED]"
+TEMP_S3_PATH = "s3://[REDACTED]"
 USER = args.user
 PASSWORD = args.password
-s3_rawdata_folder = args.s3rawdata
 
 def log_stage(stage):
-    print(f"🔄 Executing stage: {stage}")
+    print(f"Executing stage: {stage}")
 
 def load_csv_from_s3(path):
     log_stage("Loading CSV from S3")
@@ -78,15 +73,15 @@ def append_to_redshift(df, table_name):
 
 ### ETL
 try:
-    today_str = datetime.now(datetime.timezone.utc).strftime("%Y%m%d")
-    raw_path = f"{s3_rawdata_folder}transactions_{today_str}_*.csv"
+    today_str = datetime.now(timezone.utc).strftime("%Y%m%d")
+    raw_path = f"s3://[REDACTED]/transactions_{today_str}_*.csv"
     raw_df = load_csv_from_s3(raw_path)
     if raw_df.rdd.isEmpty():
         print("No new transaction file found for today. Exiting ETL.")
-        sys.exit(0)
+        exit(0)
 
     transformed_df = transform_data(raw_df)
-    historical_df = load_csv_from_s3(s3_rawdata_folder + "*.csv").select("Token ID", "DateTime (UTC)", "Buyer").withColumnRenamed("Token ID", "token_id").withColumnRenamed("Buyer", "buyer_address").withColumn("datetime", to_timestamp(col("DateTime (UTC)"))).drop("DateTime (UTC)")
+    historical_df = load_csv_from_s3("s3://[REDACTED]/*.csv").select("Token ID", "DateTime (UTC)", "Buyer").withColumnRenamed("Token ID", "token_id").withColumnRenamed("Buyer", "buyer_address").withColumn("datetime", to_timestamp(col("DateTime (UTC)"))).drop("DateTime (UTC)")
     seller_df = compute_sellers(transformed_df, historical_df)
     df = transformed_df.join(seller_df.select("token_id", "datetime", "seller_address"), ["token_id", "datetime"], "left")
     
@@ -134,9 +129,9 @@ try:
  
     append_to_redshift(fact_df, "transactions_fact")
     
-    print("✅ ETL Process Completed Successfully.")
+    print("ETL Process Completed Successfully.")
 except Exception as e:
-    print(f"❌ ETL process failed: {e}")
+    print(f"ETL process failed: {e}")
     exit(1)
 finally:
     spark.stop()
