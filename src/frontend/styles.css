@@ -5,11 +5,11 @@ body {
 }
 
 :root {
-  --primary-color: #0078d7;
+  --primary-color: #77634f;
   --secondary-color: #f8f9fa;
-  --accent-color: #005ea2;
+  --accent-color: #645f53;
   --error-color: #e74c3c;
-  --success-color: #28a745;
+  --success-color: #409554;
 }
 
 .header-with-bg {
@@ -116,7 +116,7 @@ input[type="text"] {
 input[type="text"]:focus,
 select:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+  box-shadow: 0 0 5px rgba(223, 210, 173, 0.3);
 }
 
 #time-based-summary {
@@ -256,14 +256,14 @@ div[id$="-chart"] {
 
 @media (max-width: 992px) {
   .nft-card {
-    flex: 1 1 calc(50% - 1.5rem); /* Switch to 2 cards per row on medium screens */
+    flex: 1 1 calc(50% - 1.5rem);
     max-width: calc(50% - 1.5rem);
   }
 }
 
 @media (max-width: 576px) {
   .nft-card {
-    flex: 1 1 100%; /* One card per row on small screens */
+    flex: 1 1 100%;
     max-width: 100%;
   }
 }

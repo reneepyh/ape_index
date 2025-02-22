@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ape Index - BAYC NFT 分析儀表板</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -18,16 +19,16 @@
 
     <!-- Navigation Bar -->
     <nav>
-      <button onclick="showSection('time-based')">📊 時間維度分析</button>
-      <button onclick="showSection('buyers-sellers')">🛍️ 主要買家與賣家</button>
-      <button onclick="showSection('marketplace')">🏢 市場比較</button>
-      <button onclick="showSection('resale-tokens')">🔄 最高轉售價差NFT</button>
-      <button onclick="showSection('token-transaction')">🔗 NFT交易歷史</button>
+      <button onclick="showSection('time-based')">時間維度分析</button>
+      <button onclick="showSection('buyers-sellers')">主要買家與賣家</button>
+      <button onclick="showSection('marketplace')">市場比較</button>
+      <button onclick="showSection('resale-tokens')">最高轉售價差NFT</button>
+      <button onclick="showSection('token-transaction')">NFT交易歷史</button>
     </nav>
 
     <!-- Analysis Sections -->
     <section id="time-based" class="analysis-section">
-      <h2>📊 時間維度分析</h2>
+      <h2>時間維度分析</h2>
       <p>
         此分析展示指定時間範圍內最高價售出的 BAYC NFT、BAYC NFT
         總銷售量、平均價格和交易次數。
@@ -68,7 +69,7 @@
     </section>
 
     <section id="buyers-sellers" class="analysis-section hidden">
-      <h2>🛍️ 主要買家與賣家</h2>
+      <h2>主要買家與賣家</h2>
       <p>這個分析顯示在特定時間範圍內，BAYC NFT 交易量最高的五位買家與賣家。</p>
       <select
         id="buyers-sellers-interval"
@@ -84,7 +85,7 @@
     </section>
 
     <section id="marketplace" class="analysis-section hidden">
-      <h2>🏢 市場比較</h2>
+      <h2>市場比較</h2>
       <p>這個分析顯示不同市場的 BAYC NFT 總銷售量和交易次數。</p>
       <select
         id="marketplace-interval"
@@ -108,7 +109,7 @@
     </section>
 
     <section id="resale-tokens" class="analysis-section hidden">
-      <h2>🔄 最高轉售價差NFT</h2>
+      <h2>最高轉售價差NFT</h2>
       <p>
         這個分析顯示五個最高利潤的 BAYC NFT 轉售，顯示哪個 NFT
         在單次交易中獲得最多利潤。
@@ -128,7 +129,7 @@
     </section>
 
     <section id="token-transaction" class="analysis-section hidden">
-      <h2>🔗 NFT交易歷史</h2>
+      <h2>NFT交易歷史</h2>
       <p>輸入 BAYC Token ID，並選擇時間區間，查看該 NFT 的交易歷史記錄。</p>
       <div>
         <input type="text" id="token-id" placeholder="輸入Token ID" />
@@ -145,7 +146,7 @@
 
       <div id="token-transaction-container" class="transaction-container">
         <div id="token-details" class="nft-card hidden">
-          <img id="token-image" src="assets/placeholder.jpeg" alt="NFT Image" />
+          <img id="token-image" src="assets/loading.gif" alt="NFT Image" />
           <div class="nft-details">
             <p class="token-id">
               <strong>Token ID:</strong> <span id="token-id-display">-</span>
