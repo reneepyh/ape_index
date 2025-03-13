@@ -40,7 +40,7 @@ function showSection(sectionId) {
 
       tokenDetailsEl.classList.add("hidden");
       tokenChartEl.classList.add("hidden");
-      tokenImageEl.src = "assets/placeholder.jpeg";
+      tokenImageEl.src = "assets/loading.gif";
       tokenRarityEl.textContent = "-";
       tokenIdDisplayEl.textContent = "-";
       tokenIdInput.value = "";
@@ -67,7 +67,7 @@ async function fetchTimeBasedData(interval) {
   transactionCountEl.textContent = "-";
   highestPriceEl.textContent = "-";
   highestPriceTokenIdEl.textContent = "-";
-  nftImageEl.src = "assets/placeholder.jpeg";
+  nftImageEl.src = "assets/loading.gif";
   nftRarityEl.textContent = "-";
   errorTextEl.classList.add("hidden");
   errorTextEl.textContent = "";
@@ -105,7 +105,7 @@ async function fetchTimeBasedData(interval) {
     if (highestPriceTokenId && highestPriceTokenId !== "N/A") {
       const nft = await fetchNFTDetails(highestPriceTokenId);
 
-      nftImageEl.src = nft.image_url || "assets/placeholder.jpeg";
+      nftImageEl.src = nft.image_url || "assets/loading.gif";
       nftRarityEl.textContent = nft.rarity_rank || "N/A";
     }
   } catch (error) {
@@ -136,12 +136,12 @@ async function fetchTopBuyersSellers(interval) {
           text: data.top_buyers.map((buyer) => buyer.address),
           type: "bar",
           marker: {
-            color: "#4CAF50", // Bar color
+            color: "#606723",
           },
           name: "主要買家",
           hoverlabel: {
-            bgcolor: "#FFC107", // Background color for hover tooltips (e.g., yellow)
-            font: { color: "#000000" }, // Text color for hover tooltips (e.g., black)
+            bgcolor: "#f2d6b6",
+            font: { color: "#292521" },
           },
           hovertemplate:
             "<b>地址:</b> %{text}<br>" +
@@ -180,12 +180,12 @@ async function fetchTopBuyersSellers(interval) {
           text: data.top_sellers.map((seller) => seller.address),
           type: "bar",
           marker: {
-            color: "#4CAF50", // Bar color
+            color: "#606723",
           },
           name: "主要賣家",
           hoverlabel: {
-            bgcolor: "#FFC107", // Background color for hover tooltips (e.g., yellow)
-            font: { color: "#000000" }, // Text color for hover tooltips (e.g., black)
+            bgcolor: "#f2d6b6",
+            font: { color: "#292521" },
           },
           hovertemplate:
             "<b>地址:</b> %{text}<br>" +
@@ -337,7 +337,7 @@ async function fetchTopResaleTokens(interval) {
             token_id: token.token_id,
             total_profit: token.total_profit,
             seller_address: token.seller || "N/A",
-            image_url: nft.image_url || "assets/placeholder.jpeg",
+            image_url: nft.image_url || "assets/loading.gif",
             rarity_rank: nft.rarity_rank || "N/A",
           };
         } catch (error) {
@@ -349,7 +349,7 @@ async function fetchTopResaleTokens(interval) {
             token_id: token.token_id,
             total_profit: token.total_profit,
             seller_address: token.seller || "N/A",
-            image_url: "assets/placeholder.jpeg",
+            image_url: "assets/loading.gif",
             rarity_rank: "N/A",
           };
         }
@@ -399,7 +399,7 @@ async function fetchTokenTransactions() {
   emptyText.classList.add("hidden");
   chartContainer.innerHTML = "";
   tokenDetailsEl.classList.add("hidden");
-  tokenImageEl.src = "assets/placeholder.jpeg";
+  tokenImageEl.src = "assets/loading.gif";
   tokenRarityEl.textContent = "-";
   tokenIdDisplayEl.textContent = "-";
 
@@ -411,7 +411,7 @@ async function fetchTokenTransactions() {
 
   try {
     const nft = await fetchNFTDetails(tokenIdInt);
-    tokenImageEl.src = nft.image_url || "assets/placeholder.jpeg";
+    tokenImageEl.src = nft.image_url || "assets/loading.gif";
     tokenRarityEl.textContent = nft.rarity_rank || "N/A";
     tokenIdDisplayEl.textContent = tokenIdInt;
     tokenDetailsEl.classList.remove("hidden");
@@ -440,11 +440,18 @@ async function fetchTokenTransactions() {
           text: data.data.map((tx) => tx.buyer_address),
           mode: "lines+markers",
           type: "scatter",
-          marker: { size: 8, color: "#0078D7" },
+          marker: { size: 8, color: "#606723" },
+          line: { color: "#606723", width: 2 },
           hovertemplate:
             "<b>日期:</b> %{x}<br>" +
             "<b>價格:</b> %{y:.2f} USD<br>" +
             "<b>買家地址:</b> %{text}<extra></extra>",
+          hoverlabel: {
+            bgcolor: "#f2d6b6",
+            font: {
+              color: "#292521",
+            },
+          },
         },
       ],
       {
@@ -478,7 +485,7 @@ async function fetchNFTDetails(tokenId) {
   } catch (error) {
     console.error(`Error fetching NFT details for token ${tokenId}:`, error);
     return {
-      image_url: "assets/placeholder.jpeg",
+      image_url: "assets/loading.gif",
       rarity_rank: "N/A",
     };
   }
