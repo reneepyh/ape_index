@@ -1,45 +1,117 @@
 # Ape Index - BAYC NFT Analytics
 
-Ape Index is a data engineering project that provides analytics on the **Bored Ape Yacht Club (BAYC) NFT** marketplace. The project fetches, processes, and analyzes transaction data, allowing users to gain insights into **historical sales, top buyers/sellers, marketplace comparisons, and top resale tokens**.
+Ape Index is a **data engineering project** that provides analytics on the **Bored Ape Yacht Club (BAYC) NFT marketplace**. It processes and analyzes **transaction data from Etherscan** to deliver insights into **historical sales, top buyers/sellers, marketplace comparisons, and top resale tokens**.
 
-## Features
+The project consists of **two data pipelines**:
+- **API Service Pipeline**: Provides NFT analytics via a **FastAPI REST API**.
+- **Data Warehouse Pipeline**: Uses **Spark (EMR) and Redshift** to power **Tableau dashboards**.
 
-- **Time-Based Analytics**: Aggregate sales volume, average price, and highest-priced NFT over different time intervals.
-- **Top Buyers & Sellers**: Identify the most active buyers and sellers by transaction volume.
-- **Marketplace Comparison**: Compare NFT sales performance across various marketplaces.
-- **Top Resale Tokens**: Track the most profitable NFT resales.
-- **Token Transaction History**: Fetch historical transactions for a specific NFT.
-- **NFT Metadata Fetching**: Retrieve metadata (image, rarity) for an NFT.
+**Website**: [Ape Index - BAYC NFT 分析儀表板](<https://ape-index-nft.com/>)  
+[**Tableau Dashboard**](<https://ape-index-nft.com/](https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>)
 
-## Architecture Overview
+---
 
-Ape Index consists of two main components:
+## Table of Contents
+- [Architecture](#architecture)
+- [Data Pipeline](#data-pipeline)
+- [Job API](#api)
+- [Visualization](#visualization)
+- [Technologies Used](#technologies-used)
+- [Contact](#contact)
 
-### **Backend Service** (`FastAPI` & `ETL Pipeline`)
-- Provides REST API endpoints for NFT analytics.
-- Processes transaction data using an ETL pipeline.
-- Stores data in **AWS RDS (MySQL)**.
+---
 
-### **Frontend Service** (`HTML, JS, Plotly.js`)
-- A web dashboard visualizing BAYC NFT transaction insights.
-- Fetches data from the backend API.
-- Uses **Plotly.js** for interactive charts.
+## Architecture
 
-## Data Engineering Pipeline
+Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
 
-The project follows a **traditional ETL (Extract, Transform, Load) pipeline**, orchestrated using **Apache Airflow**.
+### **1. API Service Pipeline (FastAPI & MySQL)**
+- Runs on **AWS ECS (Fargate)** to provide **NFT analytics via REST API**.
+- Uses **AWS RDS (MySQL)** to store **processed transaction data**.
+- Allows frontend and external applications to fetch **NFT statistics**.
 
-### **Data Extraction**
-- Uses `Playwright` for web scraping to extracts NFT transaction data and marketplace data.
-- Stores raw data in **AWS S3**.
-
-### **Data Transformation**
-- Cleans and processes data using **Pandas**.
-- Prepares normalized tables for buyers, sellers, and marketplaces.
-
-### **Data Loading**
-- Inserts cleaned data into an **AWS RDS MySQL database**.
+### **2. Data Warehouse Pipeline (Spark & Redshift)**
+- Runs on **AWS EMR (Spark)** to handle **ETL processing**.
+- Stores NFT sales data in **Amazon Redshift** for business intelligence.
+- **Tableau BI Dashboard** connects to Redshift for **visual analytics**.
 
 ### **Orchestration**
-- **AWS ECS (Fargate)** triggers the ETL pipeline at scheduled intervals.
-- **Airflow DAG** manages the extraction, transformation, and loading process.
+- **Airflow DAG (AWS EC2)** manages both pipelines.
+- **AWS Fargate** executes **Pandas-based ETL** for the API service.
+- **AWS EMR (Spark)** processes large-scale transactions for **Redshift**.
+
+---
+
+## Data Pipeline
+
+### **1. API Pipeline (FastAPI & MySQL)**
+#### **Extract**
+- **Playwright Web Scraper** fetches NFT transactions from **Etherscan**.
+- Uses a **proxy service to avoid scraper detection when crawling in ECS Fargate**.
+- Raw data is **stored in AWS S3**.
+
+#### **Transform**
+- **Pandas ETL**
+  - Cleans and processes raw transaction data by **removing duplicates, filtering out invalid entries, and extract USD value as a string**.
+  - Normalizes **buyers, sellers, and marketplaces** into separate relational tables.
+
+#### **Load**
+- **AWS RDS (MySQL)** stores **processed transaction data**.
+- **FastAPI** provides an API to access **NFT analytics**.
+
+---
+
+### **2. Data Warehouse Pipeline (Spark & Redshift)**
+#### **Extract**
+- Reads **raw transaction data from AWS S3**.
+
+#### **Transform**
+- **Spark (AWS EMR)**
+  - Computes **seller addresses** by applying a **window function (lag)** on transactions grouped by `token_id`, ensuring that each sale is linked to its previous buyer.
+  - **Maps transactions to Redshift dimension tables** for efficient querying.
+
+#### **Load**
+- Stores structured data in **Amazon Redshift**.
+- **Tableau BI Dashboard** connects to Redshift for insights.
+
+---
+
+## API
+
+#### **Protocol & Host**
+- **Protocol:** HTTPS  
+- **Host Name:** `https://ape-index-nft.com/`  
+- **Method:** `GET`
+
+#### **API Endpoints**
+| Endpoint                                  | Purpose                                                                                                           |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| `/api/v1/time-based-data`                 | Retrieve aggregated sales volume, average price, and highest sale over different time intervals.                  |
+| `/api/v1/top-buyers-sellers`              | Identify the top 5 buyers and sellers based on transaction volume.                                                |
+| `/api/v1/marketplace-comparison`          | Compare NFT sales across different marketplaces.                                                                  |
+| `/api/v1/top-resale-token`                | Fetch the top 5 NFT resales with the highest profit margin.                                                       |
+| `/api/v1/token-transaction?token_id={id}` | Get historical transactions for a specific NFT token.                                                             |
+| `/api/v1/nft-details?token_id={id}`       | Fetch metadata (image, rarity, attributes) for a specific NFT by calling a third-party API.                   |
+
+---
+
+## Visualization
+- **Website Dashboard (HTML, JS, Plotly.js)** visualizes **NFT transaction insights**.
+- **Tableau** connects to **Redshift** for BI dashboards.
+
+---
+
+## Technologies Used
+- **Backend**: FastAPI, SQLAlchemy
+- **Web Scraping**: Playwright
+- **ETL (API Pipeline)**: Pandas, AWS ECS (Fargate), MySQL (RDS)
+- **ETL (Data Warehouse Pipeline)**: Apache Spark, AWS EMR, Amazon Redshift
+- **Orchestration**: Apache Airflow
+- **Storage**: AWS S3
+- **BI & Visualization**: Tableau, HTML, JS, Plotly.js
+- **Infrastructure**: AWS EC2, AWS ECS (Fargate), AWS Route 53, Nginx
+
+---
+
+## Contact
+
