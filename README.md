@@ -6,15 +6,17 @@ The project consists of **two data pipelines**:
 - **API Service Pipeline**: Provides NFT analytics via a **FastAPI REST API**.
 - **Data Warehouse Pipeline**: Uses **Spark (EMR) and Redshift** to power **Tableau dashboards**.
 
+![image](https://github.com/user-attachments/assets/59d8d7a9-800b-4751-bc2f-1f5715e62467)
+
 **Website**: [Ape Index - BAYC NFT 分析儀表板](<https://ape-index-nft.com/>)  
-[**Tableau Dashboard**](<https://ape-index-nft.com/](https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>)
+**Tableau Dashboard**: [Ape Index - BAYC NFT 分析儀表板](<https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>)
 
 ---
 
 ## Table of Contents
 - [Architecture](#architecture)
 - [Data Pipeline](#data-pipeline)
-- [Job API](#api)
+- [API](#api)
 - [Visualization](#visualization)
 - [Technologies Used](#technologies-used)
 - [Contact](#contact)
@@ -74,6 +76,29 @@ Ape Index is structured into two main pipelines that handle **real-time NFT anal
 - Stores structured data in **Amazon Redshift**.
 - **Tableau BI Dashboard** connects to Redshift for insights.
 
+##### **Database Schema (Redshift)**
+The data warehouse follows a **star schema**, with `transactions_fact` storing NFT transactions and linking to dimension tables.
+
+**Fact Table (`transactions_fact`)**  
+Stores all NFT transactions and references dimension tables for buyers, sellers, marketplaces, and actions.
+
+| Column Name        | Type                | Description                                       |
+|--------------------|--------------------|---------------------------------------------------|
+| `time_id`         | BIGINT (FK)         | Transaction timestamp (links to `time_dim`).     |
+| `buyer_id`        | BIGINT (FK)         | Buyer address (links to `addresses_dim`).        |
+| `seller_id`       | BIGINT (FK, Nullable) | Seller address (links to `addresses_dim`).       |
+| `token_id`        | BIGINT              | NFT token ID.                                     |
+| `market_id`       | BIGINT (FK)         | Marketplace ID (links to `marketplaces_dim`).     |
+| `action_id`       | BIGINT (FK)         | Transaction type (links to `actions_dim`).       |
+| `price`           | DOUBLE PRECISION    | Transaction price in USD.                        |
+| `transaction_hash`| VARCHAR(255)        | Unique transaction identifier.                   |
+
+**Dimension Tables**
+- `time_dim (time_id, datetime)`
+- `addresses_dim (address_id, address)`
+- `marketplaces_dim (market_id, marketplace_name)`
+- `actions_dim (action_id, action_name)`
+
 ---
 
 ## API
@@ -115,3 +140,8 @@ Ape Index is structured into two main pipelines that handle **real-time NFT anal
 
 ## Contact
 
+Renee Hsu
+
+[piaoyunh@gmail.com](mailto:piaoyunh@gmail.com)
+
+[LinkedIn](https://www.linkedin.com/in/reneepyh/)
