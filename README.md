@@ -6,7 +6,7 @@ The project consists of **two data pipelines**:
 - **API Service Pipeline**: Provides NFT analytics via a **FastAPI REST API**.
 - **Data Warehouse Pipeline**: Uses **Spark (EMR) and Redshift** to power **Tableau dashboards**.
 
-![image](https://github.com/user-attachments/assets/59d8d7a9-800b-4751-bc2f-1f5715e62467)
+![image](readme_img/website.png)
 
 **Website**: [Ape Index - BAYC NFT 分析儀表板](<https://ape-index-nft.com/>)  
 **Tableau Dashboard**: [Ape Index - BAYC NFT 分析儀表板](<https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>)
@@ -25,7 +25,7 @@ The project consists of **two data pipelines**:
 
 ## Architecture
 
-![image](https://github.com/user-attachments/assets/2ba05bc2-1fc2-46a3-806d-89e0dd48ca6f)
+![image](readme_img/ape_index_structure.png)
 
 Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
 
@@ -125,11 +125,11 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 ## Visualization
 - **Website Dashboard (HTML, JS, Plotly.js)** visualizes **NFT transaction insights**.
 
-![demo](https://github.com/user-attachments/assets/e91eea69-ee59-431c-baa9-861c2f5d7fc9)
+![demo](readme_img/demo.gif)
 
 - **Tableau** connects to **Redshift** for BI dashboards.
   
-![image](https://github.com/user-attachments/assets/863f793e-2581-4a09-96ec-2715bf575d3d)
+![image](readme_img/tableau.png)
 
 
 ---
