@@ -125,8 +125,7 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 ## Visualization
 - **Website Dashboard (HTML, JS, Plotly.js)** visualizes **NFT transaction insights**.
 
-![螢幕錄影 2025-03-14 晚上9 47 05](https://github.com/user-attachments/assets/a6c711c1-fef7-4e9b-ab45-645df056cc20)
-
+![demo](https://github.com/user-attachments/assets/e91eea69-ee59-431c-baa9-861c2f5d7fc9)
 
 - **Tableau** connects to **Redshift** for BI dashboards.
   
