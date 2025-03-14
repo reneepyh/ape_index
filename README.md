@@ -41,6 +41,7 @@ Ape Index is structured into two main pipelines that handle **real-time NFT anal
 
 ### **Orchestration**
 - **Airflow DAG (AWS EC2)** manages both pipelines.
+  ![image](readme_img/airflow.png)
 - **AWS Fargate** executes **Pandas-based ETL** for the API service.
 - **AWS EMR (Spark)** processes large-scale transactions for **Redshift**.
 
