@@ -25,6 +25,8 @@ The project consists of **two data pipelines**:
 
 ## Architecture
 
+![image](https://github.com/user-attachments/assets/2ba05bc2-1fc2-46a3-806d-89e0dd48ca6f)
+
 Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
 
 ### **1. API Service Pipeline (FastAPI & MySQL)**
@@ -122,7 +124,14 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 
 ## Visualization
 - **Website Dashboard (HTML, JS, Plotly.js)** visualizes **NFT transaction insights**.
+
+![螢幕錄影 2025-03-14 晚上9 47 05](https://github.com/user-attachments/assets/a6c711c1-fef7-4e9b-ab45-645df056cc20)
+
+
 - **Tableau** connects to **Redshift** for BI dashboards.
+  
+![image](https://github.com/user-attachments/assets/863f793e-2581-4a09-96ec-2715bf575d3d)
+
 
 ---
 
@@ -133,8 +142,9 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 - **ETL (Data Warehouse Pipeline)**: Apache Spark, AWS EMR, Amazon Redshift
 - **Orchestration**: Apache Airflow
 - **Storage**: AWS S3
+- **Web Server & Reverse Proxy**: Nginx
 - **BI & Visualization**: Tableau, HTML, JS, Plotly.js
-- **Infrastructure**: AWS EC2, AWS ECS (Fargate), AWS Route 53, Nginx
+- **Infrastructure**: AWS EC2, AWS ECS (Fargate), AWS Route 53
 
 ---
 
