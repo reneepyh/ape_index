@@ -24,7 +24,7 @@ The project consists of **two data pipelines**:
 ---
 
 ## Data Pipeline
-
+### Architecture
 ![image](readme_img/ape_index_structure.png)
 
 Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
@@ -88,6 +88,7 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 ## Orchestration
 
 **Apache Airflow**, deployed on **Amazon EC2**, orchestrates both pipelines.
+
 ![image](readme_img/airflow.png)
 
 - **Amazon ECS** executes **Pandas-based ETL** for the API service using **ECSOperator**.
@@ -124,7 +125,7 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
     Displays key sales metrics over a selected time range, including the highest-priced BAYC NFT sold, total volume, average price, and transaction count.
 
   - **Top Buyers and Sellers**  
-    Identifies the top five BAYC NFT buyers and sellers with the highest transaction volume within the chosen time period.
+    Identifies the top five BAYC NFT buyers and sellers with the highest transaction volume.
 
   - **Marketplace Comparison**  
     Compares total sales volume and number of transactions across different NFT marketplaces for BAYC NFTs.
@@ -133,7 +134,7 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
     Highlights the five BAYC NFTs with the highest single-transaction resale profits, showing which tokens yielded the greatest gains.
 
   - **NFT Transaction History**  
-    Allows users to input a specific Token ID and view its historical transaction data within a selected time frame, including price trends.
+    Allows users to input a specific Token ID and view its historical transaction data, including price trends.
 
 - **Tableau** connects to **Redshift** for [BI dashboard](<https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>).
 
