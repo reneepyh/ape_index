@@ -14,8 +14,8 @@ The project consists of **two data pipelines**:
 ---
 
 ## Table of Contents
-- [Architecture](#architecture)
 - [Data Pipeline](#data-pipeline)
+- [Orchestration](#orchestration)
 - [API](#api)
 - [Visualization](#visualization)
 - [Technologies Used](#technologies-used)
@@ -23,33 +23,13 @@ The project consists of **two data pipelines**:
 
 ---
 
-## Architecture
+## Data Pipeline
 
 ![image](readme_img/ape_index_structure.png)
 
 Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
 
-### **1. API Service Pipeline (FastAPI & MySQL)**
-- Runs on **Amazon ECS (Fargate)** to provide **NFT analytics via REST API**.
-- Uses **Amazon RDS (MySQL)** to store **processed transaction data**.
-- Allows frontend to fetch **NFT statistics**.
-
-### **2. Data Warehouse Pipeline (Spark & Redshift)**
-- Runs on **Amazon EMR (Spark)** to handle **ETL processing**.
-- Stores NFT sales data in **Amazon Redshift** for business intelligence.
-- **Tableau BI Dashboard** connects to Redshift for **visual analytics**.
-
-### **Orchestration**
-- **Airflow DAG (Amazon EC2)** manages both pipelines.
-  ![image](readme_img/airflow.png)
-- **Amazon ECS** executes **Pandas-based ETL** for the API service.
-- **Amazon EMR (Spark)** processes large-scale transactions for **Redshift**.
-
----
-
-## Data Pipeline
-
-### **1. API Pipeline (FastAPI & MySQL)**
+### **1. API Pipeline (Pandas & MySQL)**
 #### **Extract**
 - **Playwright Web Scraper** fetches NFT transactions from **Etherscan**.
 - Uses a **proxy service to avoid scraper detection when crawling in ECS**.
@@ -105,6 +85,17 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 
 ---
 
+## Orchestration
+
+**Apache Airflow**, deployed on **Amazon EC2**, orchestrates both pipelines.
+![image](readme_img/airflow.png)
+
+- **Amazon ECS** executes **Pandas-based ETL** for the API service using **ECSOperator**.
+- **Amazon EMR (Spark)** processes large-scale transactions for **Redshift** using **EMROperator**.
+- Automated **scheduling**, **execution**, and **retries**.
+
+---
+
 ## API
 
 #### **Protocol & Host**
@@ -127,12 +118,26 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 ## Visualization
 - **[Website Dashboard](<https://ape-index-nft.com/>) (HTML, JS, Plotly.js)** visualizes **NFT transaction insights**.
 
-![demo](readme_img/demo.gif)
+  ![demo](readme_img/demo.gif)
+
+  - **Time-Based Analysis**  
+    Displays key sales metrics over a selected time range, including the highest-priced BAYC NFT sold, total volume, average price, and transaction count.
+
+  - **Top Buyers and Sellers**  
+    Identifies the top five BAYC NFT buyers and sellers with the highest transaction volume within the chosen time period.
+
+  - **Marketplace Comparison**  
+    Compares total sales volume and number of transactions across different NFT marketplaces for BAYC NFTs.
+
+  - **Top Resale Profit NFTs**  
+    Highlights the five BAYC NFTs with the highest single-transaction resale profits, showing which tokens yielded the greatest gains.
+
+  - **NFT Transaction History**  
+    Allows users to input a specific Token ID and view its historical transaction data within a selected time frame, including price trends.
 
 - **Tableau** connects to **Redshift** for [BI dashboard](<https://public.tableau.com/app/profile/renee.hsu1430/viz/shared/48GB7T75P>).
-  
-![image](readme_img/tableau.png)
 
+  ![image](readme_img/tableau.png)
 
 ---
 
