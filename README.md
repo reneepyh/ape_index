@@ -30,6 +30,8 @@ The project consists of **two data pipelines**:
 Ape Index is structured into two main pipelines that handle **real-time NFT analytics and data warehousing**.
 
 ### **1. API Pipeline (Pandas & MySQL)**
+> View related code: [manager.py](./src/etl/db/manager.py), [extract.py](./src/etl/extract.py), [transform.py](./src/etl/transform.py), [load.py](./src/etl/load.py), [pipeline.py](./src/etl/pipeline.py)
+
 #### **Extract**
 - **Playwright Web Scraper** fetches NFT transactions from **Etherscan**.
 - Uses a **proxy service to avoid scraper detection when crawling in ECS**.
@@ -48,6 +50,7 @@ Ape Index is structured into two main pipelines that handle **real-time NFT anal
 ---
 
 ### **2. Data Warehouse Pipeline (Spark & Redshift)**
+> View code: [spark_etl.py](./src/data_warehouse/etl/spark_etl.py)
 #### **Extract**
 - Reads **raw transaction data from S3**.
 
@@ -92,12 +95,15 @@ Stores all NFT transactions and references dimension tables for buyers, sellers,
 ![image](readme_img/airflow.png)
 
 - **Amazon ECS** executes **Pandas-based ETL** for the API service using **ECSOperator**.
+  > [View DAG](./src/etl/dags/pipeline_dags.py)
 - **Amazon EMR (Spark)** processes large-scale transactions for **Redshift** using **EMROperator**.
+  > [View DAG](./src/etl/dags/emr_dags.py)
 - Automated **scheduling**, **execution**, and **retries**.
 
 ---
 
 ## API
+> View code: [main.py](./src/api/main.py)
 
 #### **Protocol & Host**
 - **Protocol:** HTTPS  
